@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+<dataTypes>
+	<dataType>
+		<id>SNP</id>
+		<attribute name="ID" type="VARCHAR" required="true" size="100"/>
+		<attribute name="CHROMOSOME" type="VARCHAR" size="100"/>
+		<attribute name="SEQUENCE_START" type="INT"/>		
+		<attribute name="SEQUENCE_END" type="INT"/>		
+		<attribute name="STRAND" type="INT"/>			
+		<attribute name="ALLELE" type="VARCHAR" size="100"/>			
+	</dataType>
+</dataTypes>

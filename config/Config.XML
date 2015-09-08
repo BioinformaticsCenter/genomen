@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+<configuration>
+	<maxConcurrentAnalysesPerTask>3</maxConcurrentAnalysesPerTask>
+	<maxConcurrentIndividualsPerTask>2</maxConcurrentIndividualsPerTask>
+	<analysisLogicListPath>config/Logics.xml</analysisLogicListPath>
+	<dataTypeListPath>config/DataTypes.xml</dataTypeListPath>	
+	<maxConcurrentAnalyses>6</maxConcurrentAnalyses>
+	<maxConcurrentRequests>2</maxConcurrentRequests>
+	<maxQueueTime>2</maxQueueTime>
+	<databaseAddress>Database</databaseAddress>
+	<tmpFolderPath>tmp/</tmpFolderPath>        
+	<!-- 1 Derby -->
+	<DBType>1</DBType>	
+	<schemaName>GENOMEN</schemaName>
+	<tempSchemaName>GENOMEN_TEMP</tempSchemaName>		
+	<language>TST</language>
+</configuration>

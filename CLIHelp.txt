@@ -1,0 +1,25 @@
+Command: -o <filename>
+Function: Specifies the name of the outputfile.
+Example: -o testresults
+
+Command: -i <file path>,<format>,<id>
+Function: Specifies the path and format of the dataset file. The last parameter specifies the id of the individual and must be left empty if the dataset contains an id for the individual.
+Example: -i datasets/example.txt,23AndMe,anonymous
+
+Command: -i <file path>,<format>,<id>;<file path>,<format>,<id>
+Function: Specifies the paths and formats of the dataset files. The last parameter specifies the id of the individual and must be left empty if the dataset contains an id for the individual. Semicolon can be used to separate multiple files.
+Example: -i datasets/example1.txt,23AndMe,anonymous1;datasets/example2.txt,23AndMe,anonymous2
+
+Command: -f <output format>
+Function: Specifies the format used in the report. Supported formats are: XML, HTML and CSV.
+Example: -f HTML
+
+Command: -destroy-database
+Function: Clears the database
+Example: -destroy-database
+
+Command: -l <language name>
+Function: Specifies the language of the report
+Example: -l ENG
+
+
