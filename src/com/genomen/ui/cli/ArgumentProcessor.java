@@ -3,7 +3,7 @@ package com.genomen.ui.cli;
 import com.genomen.core.AnalysisRequest;
 import com.genomen.core.DataSet;
 import com.genomen.core.Logics;
-import com.genomen.core.reporter.ReportFormat;
+import com.genomen.reporter.ReportFormat;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -27,7 +27,7 @@ public class ArgumentProcessor {
     private static final String ANALYSES_ARGUMENT_SEPARATOR = ",";       
     
     private static final String COMMAND_FILE = "-i";
-    private static final String VALID_FILE_REG_EXP = "^[A-Za-z0-9_/.]+(:[A-Za-z0-9_/.]+)*,\\w+(,\\w+)";
+    private static final String VALID_FILE_REG_EXP = "^[A-Za-z0-9_/\\.]+(:[A-Za-z0-9_/\\.]+)*,\\w+(,\\w+)";
     private static final String DATASET_SEPARATOR = ";";
     private static final String DATASET_FILE = ":";    
     private static final String DATASET_ARGUMENT_SEPARATOR = ",";
@@ -37,8 +37,20 @@ public class ArgumentProcessor {
 
     private static final String COMMAND_HELP = "-help";
     private static final String COMMAND_DESTROY_DATABASE = "-destroy-database";
-
-    private static final String ERROR_MESSAGE = "Invalid syntax";
+    
+    private static final String COMMAND_IMPORT_DATABASE = "-import";
+    private static final String VALID_IMPORT_DATABASE_REGEXP = "^[A-Za-z0-9_/\\.]*\\.xml"
+            ;
+    private static final String COMMAND_EXPORT_DATABASE = "-export";
+    private static final String VALID_EXPORT_DATABASE_REGEXP = "^[A-Za-z0-9_/\\.]*";
+    
+    private static final String COMMAND_CREATE_DATABASE_TEMPLATE = "-template";
+    private static final String VALID_DATABASE_TEMPLATE_REGEXP = "^[A-Za-z0-9_/\\.]*";
+  
+    private static final String COMMAND_CREATE_DATABASE = "-create-database";
+    private static final String VALID_CREATE_DATABASE_REGEXP = "^[A-Za-z0-9_/\\.]*";    
+    
+    private static final String ERROR_MESSAGE = "Invalid command syntax";
 
     /**
      * Creates an analysis request based on the given command-line arguments
@@ -140,6 +152,7 @@ public class ArgumentProcessor {
         return analyses;   
     }
     
+    
     private static DataSet createDataSet( String parameterSet ) {
         
         String name = "";
@@ -163,7 +176,47 @@ public class ArgumentProcessor {
 
        return findParameter( COMMAND_LANGUAGE, VALID_LANGUAGE_REG_EXP, args );
     }
-
+    
+    /**
+     * Gets the name of the imported database file.
+     * @param args CL arguments
+     * @return  imported database file name
+     * @throws InvalidCLIArgumentException
+     */
+    public static String getImportedFile( String[] args ) throws InvalidCLIArgumentException {
+        return findParameter( COMMAND_IMPORT_DATABASE, VALID_IMPORT_DATABASE_REGEXP, args );
+    }
+    
+    /**
+     * Gets the file name for the exported database.
+     * @param args CL arguments
+     * @return exported database file name
+     * @throws InvalidCLIArgumentException
+     */
+    public static String getExportedFile( String[] args ) throws InvalidCLIArgumentException {
+        return findParameter( COMMAND_EXPORT_DATABASE, VALID_EXPORT_DATABASE_REGEXP, args );
+    }    
+  
+    /**
+     * Gets the file name for the database template
+     * @param args CL arguments
+     * @return database template file name
+     * @throws InvalidCLIArgumentException
+     */
+    public static String getTemplateFile( String[] args ) throws InvalidCLIArgumentException {
+        return findParameter( COMMAND_CREATE_DATABASE_TEMPLATE, VALID_DATABASE_TEMPLATE_REGEXP, args );
+    }        
+    
+    /**
+     * Gets the name of the file containing commands needed to reconstruct the database.
+     * @param args CL arguments
+     * @return database creation file name
+     * @throws InvalidCLIArgumentException
+     */
+    public static String getDatabaseCreationFile( String[] args ) throws InvalidCLIArgumentException {
+        return findParameter( COMMAND_CREATE_DATABASE, VALID_CREATE_DATABASE_REGEXP, args );
+    }  
+    
     private static String findParameter( String command, String parameterRegExp, String[] parameters) throws InvalidCLIArgumentException {
 
         int parameterIndex = findParameterIndex( command, parameters );
@@ -210,6 +263,11 @@ public class ArgumentProcessor {
         return false;
     }
 
+    /**
+     * Is the destruction of the database requested in the given arguments?
+     * @param args CL arguments
+     * @return <code>true</code> if the database is to be destroyed, <code>false</code> otherwise.
+     */
     public static boolean databaseDestructionRequired( String[] args) {
 
         for ( int i = 0; i < args.length; i++) {
@@ -221,5 +279,89 @@ public class ArgumentProcessor {
         }
         return false;
     }
+    
+    /**
+     * Is a file requested to be imported to the database in the given arguments?
+     * @param args CL arguments.
+     * @return <code>true</code> if a file is to be imported to the database, <code>false</code> otherwise.
+     * @throws InvalidCLIArgumentException
+     */
+    public static boolean databaseImportRequired( String[] args) throws InvalidCLIArgumentException {
+
+        if (findParameterIndex(COMMAND_IMPORT_DATABASE, args ) >=  0) {
+            return true;
+        }
+        return false;
+    } 
+    
+    /**
+     * Is the database requested to be exported in the given arguments.
+     * @param args CL arguments.
+     * @return <code>true</code> if the database is to be exported, <code>false</code> otherwise.
+     * @throws InvalidCLIArgumentException
+     */
+    public static boolean databaseExportRequired( String[] args) throws InvalidCLIArgumentException {
+
+        if (findParameterIndex(COMMAND_EXPORT_DATABASE, args ) >=  0) {
+            return true;
+        }
+        return false;
+    }   
+    
+    /**
+     * Is the creation of a database template requested in the given arguments.
+     * @param args CL arguments
+     * @return <code>true</code> if a template is to be created, <code>false</code> otherwise.
+     */
+    public static boolean databaseTemplateRequired( String[] args ) {
+        if (findParameterIndex(COMMAND_CREATE_DATABASE_TEMPLATE, args ) >=  0) {
+            return true;
+        }
+        return false;   
+    }
+    
+    /**
+     * Is the (re)creation of the database requested in the given arguments. 
+     * @param args CL arguments
+     * @return <code>true</code> if the creation of the database is requested, <code>false</code> otherwise.
+     */
+    public static boolean databaseCreationRequired( String[] args ) {
+        if (findParameterIndex(COMMAND_CREATE_DATABASE, args ) >=  0) {
+            return true;
+        }
+        return false;   
+    }    
+    
+    /**
+     * Is an analysis requested to be performed in the given arguments.
+     * @param args CL arguments
+     * @return <code>true</code> if an analysis is to be performed, false otherwise.
+     * @throws InvalidCLIArgumentException
+     */
+    public static boolean analysisRequired( String[] args) throws InvalidCLIArgumentException {
+
+        boolean outputDefined = false;
+        boolean fileDefined = false;
+        
+        for ( int i = 0; i < args.length; i++) {
+
+            if ( args[i].equals(COMMAND_OUTPUT) ) {
+                outputDefined = true;
+            }
+            if ( args[i].equals(COMMAND_FILE) ) {
+                fileDefined = true;
+            }            
+
+        }
+        if ( outputDefined && fileDefined) {
+            return true;
+        }
+        else if (  !outputDefined && !fileDefined ) {
+            return false;
+        }
+        else {
+            throw new InvalidCLIArgumentException(ERROR_MESSAGE);
+        }
+    }    
     
 }

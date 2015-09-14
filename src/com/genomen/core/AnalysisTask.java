@@ -1,11 +1,11 @@
 package com.genomen.core;
 
 
-import com.genomen.core.entities.DataEntity;
+import com.genomen.entities.DataEntity;
 import com.genomen.dao.DAOFactory;
 import com.genomen.dao.DataSetDAO;
 import com.genomen.dao.TaskDAO;
-import com.genomen.core.entities.DataType;
+import com.genomen.entities.DataType;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
