@@ -8,8 +8,6 @@ import com.genomen.utils.database.XMLImporter;
  */
 public class DatabaseImporter {
 
-    private static final String SCHEMA_NAME = "GENOMEN";
-
     public static void main ( String[] args ) {
 
         String xmlFilePath = "test_resources/import3.xml";

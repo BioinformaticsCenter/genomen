@@ -4,13 +4,15 @@ import com.genomen.core.AnalysisExecutor;
 import com.genomen.utils.database.SchemaTruncator;
 import com.genomen.core.AnalysisRequest;
 import com.genomen.core.Configuration;
-import com.genomen.core.Analyzer;
 import com.genomen.core.TaskState;
-import com.genomen.core.reporter.CSVReportCreator;
-import com.genomen.core.reporter.Report;
-import com.genomen.core.reporter.ReportFormat;
-import com.genomen.core.reporter.XMLReportCreator;
-import com.genomen.core.reporter.XSLTTransformer;
+import com.genomen.reporter.CSVReportCreator;
+import com.genomen.reporter.ReportFormat;
+import com.genomen.reporter.XMLReportCreator;
+import com.genomen.reporter.XSLTTransformer;
+import com.genomen.tools.DatabaseRecreator;
+import com.genomen.utils.database.XMLExporter;
+import com.genomen.utils.database.XMLImporter;
+import com.genomen.utils.database.XMLTemplateCreator;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -32,40 +34,68 @@ public class GDCLI implements Observer {
     private static final String MESSAGE_CREATING_REPORTS = "Creating reports...";
     private static final String MESSAGE_PERFORMING_ANALYSIS = "Performing analysis...";
     private static final String MESSAGE_CLEARING_DATA = "Clearing data...";
-
+    private static final String MESSAGE_UNABLE_TO_READ_HELP = "Unable to read CLIHelp.txt";
+    
     public static void main ( String[] args ) {
 
         GDCLI cli = new GDCLI();
-        cli.initializeAnalysis(args);
+        
+        try {   
+            
+            if ( ArgumentProcessor.helpRequired( args )) {
+                cli.printHelp();
+                return;
+            }
+            cli.performMaintainance(args);  
+            if ( ArgumentProcessor.analysisRequired(args)) {
+                cli.initializeAnalysis(args);     
+            }
+            
+        }
+        catch (InvalidCLIArgumentException ex) {
+
+            cli.printHelp();
+
+        }    
+        
     }
 
     private AnalysisRequest analysisRequest;
 
+    private void performMaintainance( String[] args ) throws InvalidCLIArgumentException {
+        
+        if ( ArgumentProcessor.databaseDestructionRequired( args )) {
+            SchemaTruncator.truncate(Configuration.getConfiguration().getDatabaseSchemaName(),true);
+        }
+        if ( ArgumentProcessor.databaseCreationRequired(args)) {
+            System.out.println("Creating database...");
+            DatabaseRecreator.main(args);
+            System.out.println("Database created!");              
+        }        
+        if ( ArgumentProcessor.databaseImportRequired(args)) {
+            XMLImporter importer = new XMLImporter();
+            System.out.println("Importing database...");            
+            importer.importToDatabase(ArgumentProcessor.getImportedFile(args), Configuration.getConfiguration().getDatabaseSchemaName()); 
+        }
+        if ( ArgumentProcessor.databaseExportRequired(args)) {
+            System.out.println("Exporting database...");
+            XMLExporter.export(Configuration.getConfiguration().getDatabaseSchemaName(), ArgumentProcessor.getExportedFile(args));
+            System.out.println("Database imported!");            
+        }
+        if ( ArgumentProcessor.databaseTemplateRequired(args)) {
+            System.out.println("Creating template...");
+            XMLTemplateCreator.createXMLTemplate(Configuration.getConfiguration().getDatabaseSchemaName(), ArgumentProcessor.getTemplateFile(args));  
+            System.out.println("Template created!");              
+        }
+  
+    }
+    
     /*
      * Creates the analysis request and initializes the analyzation process..
      */
-    private void initializeAnalysis( String[] args) {
+    private void initializeAnalysis( String[] args) throws InvalidCLIArgumentException {
 
-        if ( ArgumentProcessor.helpRequired( args )) {
-            printHelp();
-            return;
-        }
-
-         if ( ArgumentProcessor.databaseDestructionRequired( args )) {
-            SchemaTruncator.truncate(Configuration.getConfiguration().getDatabaseSchemaName(),true);
-            return;
-        }
-
-        try {
-            analysisRequest = ArgumentProcessor.createRequest(args);
-        }
-        catch (InvalidCLIArgumentException ex) {
-
-            System.out.println(ex);
-            printHelp();
-            return;
-
-        }
+        analysisRequest = ArgumentProcessor.createRequest(args);
         analysisRequest.addObserver(this);
         performAnalysis();
 
@@ -78,6 +108,7 @@ public class GDCLI implements Observer {
         AnalysisExecutor.start();
         AnalysisExecutor.requestAnalysis(analysisRequest);
     }
+    
     /*
      * Ends the analysis.
      */
@@ -95,7 +126,7 @@ public class GDCLI implements Observer {
             }                
             if ( analysisRequest.getRequiredFormats().contains( ReportFormat.HTML.getName() ) ) {
                 XMLReportCreator.createXML(analysisRequest.getReport(i));
-                XSLTTransformer.transform(analysisRequest.getReport(i).getName() + ".xml", "config/HTMLTransform.xsl", analysisRequest.getReport(i).getName() + ".html");                       
+                XSLTTransformer.transform(analysisRequest.getReport(i).getName() + ".xml", Configuration.getConfiguration().getXSLTFilePath(), analysisRequest.getReport(i).getName() + ".html");                       
             }  
     
 
@@ -126,7 +157,7 @@ public class GDCLI implements Observer {
     }
 
     /**
-     * Prints the contents of CLIHelp-txt
+     * Prints the contents of CLIHelp.txt
      */
     private void printHelp() {
 
@@ -145,10 +176,10 @@ public class GDCLI implements Observer {
             bufferedReader.close();
         }
         catch (FileNotFoundException ex) {
-
+            System.out.println(MESSAGE_UNABLE_TO_READ_HELP);
         }
         catch (IOException ex) {
-
+            System.out.println(MESSAGE_UNABLE_TO_READ_HELP);
         }
 
 
