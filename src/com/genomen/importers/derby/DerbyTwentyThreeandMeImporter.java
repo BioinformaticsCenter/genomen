@@ -59,6 +59,7 @@ public class DerbyTwentyThreeandMeImporter extends DerbySNPImporter implements I
             bufferedReader = new BufferedReader( fileReader );
 
             File tempFile = new File( Configuration.getConfiguration().getTmpFolderPath() + taskID.concat(individualID).concat(TEMP_FILE_NAME));
+            tempFile.getParentFile().mkdirs();
             bufferedWriter = new BufferedWriter( new FileWriter(tempFile));
 
             String line;
