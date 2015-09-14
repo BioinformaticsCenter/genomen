@@ -69,7 +69,7 @@ public class GDCLI implements Observer {
         }
         if ( ArgumentProcessor.databaseCreationRequired(args)) {
             System.out.println("Creating database...");
-            DatabaseRecreator.main(args);
+            DatabaseRecreator.recreateDatabase(args[1]);
             System.out.println("Database created!");              
         }        
         if ( ArgumentProcessor.databaseImportRequired(args)) {

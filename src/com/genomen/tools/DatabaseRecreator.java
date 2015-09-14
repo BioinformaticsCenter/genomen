@@ -22,7 +22,7 @@ import java.util.List;
  */
 public class DatabaseRecreator {
 
-    public static void main( String[] args) {
+    public static void recreateDatabase( String args) {
 
         if (Configuration.getConfiguration().getDBType() == DAOFactory.DERBY ) {
             deleteDatabase();
@@ -30,7 +30,7 @@ public class DatabaseRecreator {
         
 
 
-        String commandFilePath = args[0];
+        String commandFilePath = args;
         
         List<String> commands = getCommands(commandFilePath);
 
