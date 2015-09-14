@@ -1,6 +1,6 @@
 from com.genomen.core import Individual
-from com.genomen.core.scripts import LogicResult
-from com.genomen.core.scripts import JythonLogicExecutor
+from com.genomen.scripts import LogicResult
+from com.genomen.scripts import JythonLogicExecutor
 
 jythonLogicExecutor
 individual = Individual("defaultId")
