@@ -39,8 +39,7 @@ public class Configuration {
     private final String DATABASE_TEMP_SCHEMA_NAME;
     private final String DATA_TYPE_LIST_PATH;    
     private final String LANGUAGE;
-    private final String XSLT_FILE_PATH;   
-    
+
     /**
      * Gets the maximum allowed number of concurrent analyses per task.
      * @return maximum concurrent analyses
@@ -104,14 +103,6 @@ public class Configuration {
     public String getTmpFolderPath() {
         return TMP_FOLDER_PATH;
     }    
-    
-    /**
-     * Gets the XSLT file path
-     * @return XSLT file path
-     */
-    public String getXSLTFilePath() {
-        return XSLT_FILE_PATH;
-    }     
     
     /**
      * Gets the path to the list of datatypes.
@@ -178,7 +169,7 @@ public class Configuration {
         DATABASE_TEMP_SCHEMA_NAME = getStringValue("tempSchemaName");
         DATA_TYPE_LIST_PATH = getStringValue("dataTypeListPath");    
         LANGUAGE = getStringValue("language");        
-        XSLT_FILE_PATH = getStringValue("xsltFilePath");    
+
     }
 
     /**

@@ -1,9 +1,9 @@
 package com.genomen.dao;
 
-import com.genomen.entities.DataAttributeConverter;
-import com.genomen.entities.DataEntity;
-import com.genomen.entities.DataEntityAttributeValue;
-import com.genomen.entities.DataType;
+import com.genomen.core.entities.DataAttributeConverter;
+import com.genomen.core.entities.DataEntity;
+import com.genomen.core.entities.DataEntityAttributeValue;
+import com.genomen.core.entities.DataType;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;

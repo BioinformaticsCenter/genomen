@@ -1,49 +1,25 @@
-Command: -o <filename> -i <file path>,<format>,<id>
+Command: -o <filename>
+Function: Specifies the name of the outputfile.
+Example: -o testresults
 
-	Parameter: -o <filename>
-	Function: Specifies the name of the outputfile.
-	Example: -o testresults
+Command: -i <file path>,<format>,<id>
+Function: Specifies the path and format of the dataset file. The last parameter specifies the id of the individual and must be left empty if the dataset contains an id for the individual.
+Example: -i datasets/example.txt,23AndMe,anonymous
 
-	Parameter: -i <file path>,<format>,<id>
-	Function: Specifies the path and format of the dataset file. The last parameter specifies the id of the individual and must be left empty if the dataset contains an id for the individual.
-	Example: -i datasets/example.txt,23AndMe,anonymous
+Command: -i <file path>,<format>,<id>;<file path>,<format>,<id>
+Function: Specifies the paths and formats of the dataset files. The last parameter specifies the id of the individual and must be left empty if the dataset contains an id for the individual. Semicolon can be used to separate multiple files.
+Example: -i datasets/example1.txt,23AndMe,anonymous1;datasets/example2.txt,23AndMe,anonymous2
 
-	Parameter: -i <file path>,<format>,<id>;<file path>,<format>,<id>
-	Function: Specifies the paths and formats of the dataset files. The last parameter specifies the id of the individual and must be left empty if the dataset contains an id for the individual. Semicolon 	 can be used to separate multiple files.
-	Example: -i datasets/example1.txt,23AndMe,anonymous1;datasets/example2.txt,23AndMe,anonymous2
-
-	Parameter(Optional): -a <name of a analysis class 1>,....,<name of a analysis class n>
-	Function: Specifies the analyses to be performed.
-	Example: -a com.genediag.core.analyses.SNPAnalysis
-	Default: All available analyses.
-
-	Parameter(Optional): -f <output format>
-	Function: Specifies the format used in the report. Supported formats are: XML, HTML and CSV.
-	Example: -f HTML
-	Default: HTML
-
-	Parameter(Optional): -l <language name>
-	Function: Specifies the language of the report
-	Example: -l ENG
-	Default: ENG
+Command: -f <output format>
+Function: Specifies the format used in the report. Supported formats are: XML, HTML and CSV.
+Example: -f HTML
 
 Command: -destroy-database
 Function: Clears the database
 Example: -destroy-database
 
-Command: -create-database <SQL statement file>
-Function: Creates a new databased using the SQL statements given as a parameter, overwriting the original database.
-Example: -create-database SQLCommands.txt
+Command: -l <language name>
+Function: Specifies the language of the report
+Example: -l ENG
 
-Command: -import <database XML-file>
-Function: Imports the data in the XML file given as a parameter to corresponding tables in the database.
-Example: -import GenOmen.xml
-
-Command: -export <file name>
-Function: Exports the contents of the database into a XML file.
-Example: -export ExportedDatabase.xml
-
-Command: -template <template name>
-Function: Creates a template of the database.
-Example: -template TestTemplate.xml
 

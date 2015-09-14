@@ -1,7 +1,5 @@
 package com.genomen.tools;
 
-import com.genomen.core.Configuration;
-import com.genomen.dao.DAOFactory;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -22,21 +20,19 @@ import java.util.List;
  */
 public class DatabaseRecreator {
 
+    private static String commandFilePath = "test_resources/SQLCommands.txt";
+    private static String DATABASE_NAME = "Database";
+
     public static void main( String[] args) {
 
-        if (Configuration.getConfiguration().getDBType() == DAOFactory.DERBY ) {
-            deleteDatabase();
-        }
-        
-
-
-        String commandFilePath = args[0];
-        
-        List<String> commands = getCommands(commandFilePath);
+        System.out.println("Deleting database...");
+        deleteDatabase();
+        System.out.println("Recreating database...");
+        List<String> commands = getCommands();
 
             Connection connection = null;
             try {
-                connection = createConnection( Configuration.getConfiguration().getDatabaseAddress() );
+                connection = createConnection( DATABASE_NAME );
                 Statement statement;
                 statement = connection.createStatement();
 
@@ -86,7 +82,7 @@ public class DatabaseRecreator {
         return connection;
     }
     
-    private static List<String> getCommands(String commandFilePath) {
+    private static List<String> getCommands() {
         
         List<String> commands = new LinkedList<String>();
         try {
@@ -139,7 +135,7 @@ public class DatabaseRecreator {
 
 
     private static void deleteDatabase() {
-        deleteFolder(new File(Configuration.getConfiguration().getDatabaseAddress()));
+        deleteFolder(new File(DATABASE_NAME));
     }
 
     private static void deleteFolder(File path) {

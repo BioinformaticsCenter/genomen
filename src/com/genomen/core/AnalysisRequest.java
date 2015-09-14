@@ -1,7 +1,7 @@
 package com.genomen.core;
 
-import com.genomen.reporter.Report;
-import com.genomen.reporter.ReportFormat;
+import com.genomen.core.reporter.Report;
+import com.genomen.core.reporter.ReportFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Observable;

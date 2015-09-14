@@ -1,12 +1,12 @@
 package com.genomen.core;
 
 import com.genomen.core.Error.ErrorType;
-import com.genomen.importers.Importer;
-import com.genomen.importers.ImporterFactory;
+import com.genomen.core.importers.Importer;
+import com.genomen.core.importers.ImporterFactory;
 import com.genomen.dao.DAOFactory;
 import com.genomen.dao.TaskDAO;
-import com.genomen.reporter.Report;
-import com.genomen.reporter.ReportCreator;
+import com.genomen.core.reporter.Report;
+import com.genomen.core.reporter.ReportCreator;
 import com.genomen.utils.RandomStringGenerator;
 import java.util.ArrayList;
 import java.util.List;

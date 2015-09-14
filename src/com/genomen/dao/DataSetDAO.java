@@ -1,7 +1,7 @@
 package com.genomen.dao;
 
-import com.genomen.entities.DataEntity;
-import com.genomen.entities.DataType;
+import com.genomen.core.entities.DataEntity;
+import com.genomen.core.entities.DataType;
 
 
 /**
