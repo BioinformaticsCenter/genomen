@@ -18,7 +18,7 @@ import java.util.List;
 public class SNPReporter extends Reporter {
 
 
-    private static final String REQUIRED_TAG = "com.genomen.core.analyses.SNPAnalysis";
+    private static final String REQUIRED_TAG = "com.genomen.analyses.SNPAnalysis";
     private static final String[] TABLE_HEADERS = {"Status", "TraitName", "InterestLevel", "EffectSize", "Resolvable", "Logic"};
     private static final String[] TABLE_HEADER_DESCRIPTIONS = {"Status", "Trait Name" , "Interest Level", "Effect Size", "Resolvable", "Logic"};
     private static final String TABLE_TITLE = "SNP";
