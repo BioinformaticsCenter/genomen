@@ -1,0 +1,284 @@
+CREATE  TABLE GenOmen.genotype (
+  SYMBOLIC_NAME_ID VARCHAR(35) NOT NULL ,
+  PRIMARY KEY ( SYMBOLIC_NAME_ID  ) );
+
+CREATE  TABLE GenOmen.language (
+  SYMBOLIC_NAME_ID VARCHAR(3) NOT NULL ,
+  name VARCHAR(100) ,
+  PRIMARY KEY (SYMBOLIC_NAME_ID) );
+
+CREATE  TABLE GenOmen.phenotype (
+  SYMBOLIC_NAME_ID VARCHAR(35) NOT NULL,
+  PRIMARY KEY (SYMBOLIC_NAME_ID)
+  );
+
+CREATE  TABLE GenOmen.phenotype_description (
+  SYMBOLIC_NAME_ID VARCHAR(35) NOT NULL,
+  language_symbolic_name_id VARCHAR(3) NOT NULL ,
+  phenotype_symbolic_name_id VARCHAR(35) NOT NULL ,
+  name VARCHAR(45) ,
+  short_desc CLOB ,
+  description CLOB ,
+  PRIMARY KEY (SYMBOLIC_NAME_ID) ,
+  CONSTRAINT uc_Phenotype_Description_ID UNIQUE (phenotype_symbolic_name_id ),
+  CONSTRAINT fk_phenotype_description_language1
+    FOREIGN KEY (language_symbolic_name_id )
+    REFERENCES GenOmen.language ( SYMBOLIC_NAME_ID )
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT fk_phenotype_symbolic_name1
+    FOREIGN KEY (phenotype_symbolic_name_id )
+    REFERENCES GenOmen.phenotype ( SYMBOLIC_NAME_ID )
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION	
+	);
+
+
+CREATE  TABLE GenOmen.trait (
+  SYMBOLIC_NAME_ID VARCHAR(35) NOT NULL,
+  class VARCHAR(45) CONSTRAINT class_ck CHECK (class IN ('TRAIT','DISEASE', 'DRUG')),
+  PRIMARY KEY (SYMBOLIC_NAME_ID) 
+);
+
+CREATE  TABLE GenOmen.trait_description (
+  SYMBOLIC_NAME_ID VARCHAR(35) NOT NULL,
+  language_symbolic_name_id VARCHAR(3) NOT NULL,
+  trait_symbolic_name_id VARCHAR(35) NOT NULL,
+  name VARCHAR(45) ,
+  short_desc CLOB ,
+  description CLOB ,
+  PRIMARY KEY (SYMBOLIC_NAME_ID ) ,
+  CONSTRAINT uc_Traint_Description_ID UNIQUE (trait_symbolic_name_id, language_symbolic_name_id),
+  CONSTRAINT fk_trait_description_language1
+    FOREIGN KEY ( language_symbolic_name_id )
+    REFERENCES GenOmen.language ( SYMBOLIC_NAME_ID  )
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT fk_trait_description_trait1
+    FOREIGN KEY ( trait_symbolic_name_id )
+    REFERENCES GenOmen.trait ( SYMBOLIC_NAME_ID  )
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION
+);
+
+
+CREATE  TABLE GenOmen.population (
+  SYMBOLIC_NAME_ID VARCHAR(35) NOT NULL,
+  PRIMARY KEY (SYMBOLIC_NAME_ID) );
+
+CREATE  TABLE GenOmen.population_description (
+  SYMBOLIC_NAME_ID VARCHAR(35) NOT NULL,
+  language_symbolic_name_id VARCHAR(3) NOT NULL ,
+  population_symbolic_name_id VARCHAR(35) NOT NULL ,
+  name VARCHAR(100) ,
+  description VARCHAR(100) ,
+  PRIMARY KEY (SYMBOLIC_NAME_ID) ,
+  CONSTRAINT uc_Population_Description_ID UNIQUE (population_symbolic_name_id, language_symbolic_name_id),  
+  CONSTRAINT fk_population_description_language1
+    FOREIGN KEY (language_symbolic_name_id )
+    REFERENCES GenOmen.language (SYMBOLIC_NAME_ID )
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT fk_population_description_population1
+    FOREIGN KEY ( population_symbolic_name_id )
+    REFERENCES GenOmen.population (SYMBOLIC_NAME_ID )
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION
+);
+
+
+CREATE  TABLE GenOmen.reference_trait_risk (
+  population_symbolic_name_id VARCHAR(35) NOT NULL ,
+  gender VARCHAR(1) CONSTRAINT gender_ck CHECK (gender IN ('M','F' )),
+  min_age INT ,
+  max_age INT ,
+  risk DECIMAL(5,2) ,
+  rule_symbolic_name_id VARCHAR(35), 
+  PRIMARY KEY (population_symbolic_name_id, rule_symbolic_name_id ) );
+
+CREATE  TABLE GenOmen.rule (
+  SYMBOLIC_NAME_ID VARCHAR(35) NOT NULL,
+  trait_symbolic_name_id VARCHAR(35),
+  logic CLOB,
+  effect_type VARCHAR(45) CONSTRAINT effect_type_ck CHECK ( effect_type IN ('TEXT', 'NUMERIC', 'RISK')),
+  EFFECT_UNIT VARCHAR(10),
+  interest_level INT,
+  subresult VARCHAR(1) CONSTRAINT subrule_ck CHECK ( subresult IN ('Y', 'N')),
+  PRIMARY KEY (SYMBOLIC_NAME_ID),
+  CONSTRAINT fk_rule_trait1
+    FOREIGN KEY (trait_symbolic_name_id )
+    REFERENCES GenOmen.trait (SYMBOLIC_NAME_ID )
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION
+);
+
+CREATE  TABLE GenOmen.xref_source (
+  SYMBOLIC_NAME_ID VARCHAR(35) NOT NULL,
+  name VARCHAR(45) ,
+  url VARCHAR(45) ,
+  version VARCHAR(45),
+  PRIMARY KEY (SYMBOLIC_NAME_ID) );
+
+CREATE  TABLE GenOmen.genotype_xref (
+  SYMBOLIC_NAME_ID VARCHAR(35) NOT NULL,
+  xref_id VARCHAR(45) ,
+  genotype_symbolic_name_id VARCHAR(35) ,
+  xref_source_symbolic_name_id VARCHAR(35) ,
+  locus VARCHAR(45) ,
+  chr VARCHAR(2) ,
+  position INT,
+  PRIMARY KEY (SYMBOLIC_NAME_ID) ,
+  CONSTRAINT fk_GENOTYPE_ID_X_REF_Genotype1
+    FOREIGN KEY (genotype_symbolic_name_id )
+    REFERENCES GenOmen.genotype ( SYMBOLIC_NAME_ID )
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT fk_GENOTYPE_ID_X_REF_SOURCE1
+    FOREIGN KEY (xref_source_symbolic_name_id )
+    REFERENCES GenOmen.xref_source ( SYMBOLIC_NAME_ID )
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION   
+    );
+
+CREATE  TABLE GenOmen.result_description (
+  SYMBOLIC_NAME_ID VARCHAR(35) NOT NULL,
+  language_symbolic_name_id VARCHAR(3) NOT NULL ,
+  rule_symbolic_name_id VARCHAR(35) NOT NULL ,
+  description CLOB ,
+  PRIMARY KEY ( SYMBOLIC_NAME_ID ) ,
+  CONSTRAINT fk_result_description_Rule1
+    FOREIGN KEY (rule_symbolic_name_id )
+    REFERENCES GenOmen.rule(SYMBOLIC_NAME_ID)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT fk_rule_rule_description_language1
+    FOREIGN KEY (language_symbolic_name_id )
+    REFERENCES GenOmen.language (SYMBOLIC_NAME_ID)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION
+);
+
+CREATE  TABLE GenOmen.rule_description (
+  SYMBOLIC_NAME_ID VARCHAR(35) NOT NULL,
+  language_symbolic_name_id VARCHAR(3) NOT NULL ,
+  rule_symbolic_name_id VARCHAR(35) NOT NULL ,
+  description CLOB ,
+  PRIMARY KEY ( SYMBOLIC_NAME_ID ) ,
+  CONSTRAINT fk_Description_Evidence1
+    FOREIGN KEY (rule_symbolic_name_id )
+    REFERENCES GenOmen.rule(SYMBOLIC_NAME_ID)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT fk_evidence_description_language1
+    FOREIGN KEY (language_symbolic_name_id )
+    REFERENCES GenOmen.language (SYMBOLIC_NAME_ID)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION
+);
+
+CREATE  TABLE GenOmen.reference (
+  SYMBOLIC_NAME_ID VARCHAR(35) NOT NULL,
+  authors VARCHAR(10000) ,
+  publication_year INT ,
+  title VARCHAR(1000) ,
+  journal_information VARCHAR(1000) ,
+  pmid BIGINT ,
+  PRIMARY KEY ( SYMBOLIC_NAME_ID )
+  );
+
+CREATE TABLE GenOmen.rule_reference (
+  RULE_SYMBOLIC_NAME_ID VARCHAR(35) NOT NULL,
+  REFERENCE_SYMBOLIC_NAME_ID VARCHAR(35) NOT NULL,
+  CONSTRAINT fk_reference_rule1
+    FOREIGN KEY ( RULE_SYMBOLIC_NAME_ID)
+    REFERENCES GenOmen.rule(SYMBOLIC_NAME_ID)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,  
+  CONSTRAINT fk_reference_reference1
+    FOREIGN KEY ( REFERENCE_SYMBOLIC_NAME_ID )
+    REFERENCES GenOmen.reference(SYMBOLIC_NAME_ID)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION
+);
+
+CREATE  TABLE GenOmen.allele (
+  SYMBOLIC_NAME_ID VARCHAR(35) NOT NULL,
+  genotype_symbolic_name_id VARCHAR(35) NOT NULL ,
+  sequence VARCHAR(45),
+  type VARCHAR(10),
+  PRIMARY KEY (SYMBOLIC_NAME_ID) ,
+  CONSTRAINT fk_allele_genotype1
+    FOREIGN KEY (genotype_symbolic_name_id )
+    REFERENCES GenOmen.genotype (SYMBOLIC_NAME_ID)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION
+);
+
+CREATE  TABLE GenOmen.allele_frequency (
+  SYMBOLIC_NAME_ID VARCHAR(35) NOT NULL,
+  population_symbolic_name_id VARCHAR(35) ,
+  frequency DECIMAL(5,2) ,
+  allele_symbolic_name_id VARCHAR(35) NOT NULL ,
+  PRIMARY KEY (SYMBOLIC_NAME_ID) ,
+  CONSTRAINT fk_allele_frequency_allele1
+    FOREIGN KEY ( allele_symbolic_name_id )
+    REFERENCES GenOmen.allele ( SYMBOLIC_NAME_ID )
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT fk_allele_frequency_population1
+    FOREIGN KEY ( population_symbolic_name_id )
+    REFERENCES GenOmen.population ( SYMBOLIC_NAME_ID )
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION
+);
+
+
+CREATE TABLE GenOmen.trait_reference (
+  TRAIT_SYMBOLIC_NAME_ID VARCHAR(35) NOT NULL,
+  REFERENCE_SYMBOLIC_NAME_ID VARCHAR(35) NOT NULL,
+  CONSTRAINT fk_reference_trait1
+    FOREIGN KEY ( TRAIT_SYMBOLIC_NAME_ID)
+    REFERENCES GenOmen.trait(SYMBOLIC_NAME_ID)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,  
+  CONSTRAINT fk_reference_trait_reference1
+    FOREIGN KEY ( REFERENCE_SYMBOLIC_NAME_ID )
+    REFERENCES GenOmen.reference(SYMBOLIC_NAME_ID)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION
+);
+
+CREATE TABLE GenOmen.error_message (
+  	SYMBOLIC_NAME_ID VARCHAR(35) NOT NULL,
+	language_symbolic_name_id VARCHAR(3) NOT NULL,
+	message VARCHAR(100) NOT NULL,
+	PRIMARY KEY( SYMBOLIC_NAME_ID, language_symbolic_name_id ),
+  	CONSTRAINT fk_error_message_language1
+    	FOREIGN KEY ( language_symbolic_name_id )
+      	  REFERENCES GenOmen.language (SYMBOLIC_NAME_ID)
+    	  ON DELETE NO ACTION
+    	  ON UPDATE NO ACTION
+);
+
+CREATE TABLE GenOmen.SNP (
+  INDIVIDUAL_ID VARCHAR(100) NOT NULL,
+  SNP_ID VARCHAR(100) NOT NULL,
+  CHROMOSOME VARCHAR(20),
+  SEQUENCE_START INT,
+  SEQUENCE_END INT,
+  STRAND INT,
+  ALLELE VARCHAR(255), 
+  PRIMARY KEY( INDIVIDUAL_ID, SNP_ID )
+);
+
+CREATE TABLE GenOmen_TEMP.Task (
+  TASK_ID VARCHAR(100) NOT NULL,
+  STATE INT,
+  PRIMARY KEY( TASK_ID )
+);
+
+CREATE TABLE GenOmen_TEMP.Task_table (
+  TASK_ID VARCHAR(100) NOT NULL,
+  TABLE_NAME VARCHAR(100) NOT NULL,
+  PRIMARY KEY( TASK_ID, TABLE_NAME )
+);
