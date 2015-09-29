@@ -48,4 +48,18 @@ public class StringUtils {
 
         return text.replaceAll("\\r\\n|\\r|\\n", " ");
     }
+    
+    /**
+     * Removes non-quoted whitespace.
+     * @param text Text with unnecessary whitespace
+     * @return text without unnecessary whitespace
+     */
+    public static String removeNonQuotedWhitespace( String text) {
+        
+        if (text == null ) {
+            return null;
+        }
+        
+        return text.replace("\\s+(?=([^\\\"]*\\\"[^\\\"]*\\\")*[^\\\"]*$)\\\"", "");
+    }
 }
