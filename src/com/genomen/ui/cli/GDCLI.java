@@ -80,7 +80,7 @@ public class GDCLI implements Observer {
         if ( ArgumentProcessor.databaseExportRequired(args)) {
             System.out.println("Exporting database...");
             XMLExporter.export(Configuration.getConfiguration().getDatabaseSchemaName(), ArgumentProcessor.getExportedFile(args));
-            System.out.println("Database imported!");            
+            System.out.println("Database exported!");            
         }
         if ( ArgumentProcessor.databaseTemplateRequired(args)) {
             System.out.println("Creating template...");
