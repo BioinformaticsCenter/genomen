@@ -74,12 +74,12 @@ def GENO(name,allele="", alleles = [], risk = [] ):
 	
 	if len(alleles) > 0 and len(risk) > 0:
 		for i,a in enumerate(alleles):
-			genotypeResult = jythonLogicExecutor.compareToData( "SNP",individual,name,"ALLELE",a)
+			genotypeResult = jythonLogicExecutor.compareToData( "VARIANT",individual, "VARIANT_ID",name,"ALLELE",a)
 			if genotypeResult.getResult():
 				genotypeResult.setInterestLevel(risk[i])
 			
 	else:
-		genotypeResult = jythonLogicExecutor.compareToData( "SNP",individual,name,"ALLELE",allele)
+		genotypeResult = jythonLogicExecutor.compareToData( "VARIANT",individual, "VARIANT_ID", name,"ALLELE",allele)
 		genotypeResult.setType(LogicResult.ALLELE)
 		
 	return IntermediateResult(genotypeResult)
