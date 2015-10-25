@@ -1,11 +1,11 @@
 
 package com.genomen.importers.derby;
 
-import com.genomen.importers.derby.DerbySNPImporter;
 import com.genomen.dao.DerbyDAOFactory;
 import com.genomen.entities.DataEntityAttributeValue;
 import com.genomen.core.Individual;
 import com.genomen.importers.Importer;
+import com.genomen.importers.ImporterException;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -20,6 +20,9 @@ import java.util.LinkedList;
 import java.util.List;
 import org.apache.log4j.Logger;
 import com.genomen.utils.ResourceReleaser;
+import java.sql.SQLException;
+import java.util.logging.Level;
+
 
 /**
  * Importer for PED files.
@@ -71,9 +74,14 @@ public class DerbyPEDImporter extends DerbySNPImporter implements Importer {
         }
         catch (FileNotFoundException ex) {
             Logger.getLogger( this.getClass() ).error( ex );
+            individualList = null;
         }
         catch (IOException ex) {
             Logger.getLogger( this.getClass() ).error( ex );
+            individualList = null;
+        } catch (ImporterException ex) {
+            Logger.getLogger(DerbyTwentyThreeandMeImporter.class ).error( ex.getMessage());
+            individualList = null;
         }
         finally {
             ResourceReleaser.close(bufferedReader);
@@ -110,13 +118,14 @@ public class DerbyPEDImporter extends DerbySNPImporter implements Importer {
         return new Individual(individualID, familyID);
     }
 
-    private void importSNPs( StreamTokenizer PEDTokenizer, File MAPFile, Individual individual, String schemaName, String tableName ) {
+    private void importSNPs( StreamTokenizer PEDTokenizer, File MAPFile, Individual individual, String schemaName, String tableName ) throws ImporterException {
 
         BufferedReader MAPReader = null;
         BufferedWriter bufferedWriter = null;
+        File temp = null;
         try {
 
-            File temp = new File(individual.getId() + TEMP_FILE_NAME);
+            temp = new File(individual.getId() + TEMP_FILE_NAME);
 
             bufferedWriter = new BufferedWriter( new FileWriter(temp) );
 
@@ -126,15 +135,18 @@ public class DerbyPEDImporter extends DerbySNPImporter implements Importer {
 
             Connection connection = null;
 
-            try {
-                connection = DerbyDAOFactory.createConnection();
-            }
-            catch (Exception ex) {
-                return;
-            }
+
+            connection = DerbyDAOFactory.createConnection();
+
             
             String[] alleles = new String[2];
 
+            int id = getCurrentId( individual.getId(), getType());   
+            
+            if ( id == DerbyImporter.INVALID_ID) {
+                throw new ImporterException( ImporterException.DATA_TABLE_INDEX_ERROR, getType());
+            }
+            
             int index = 0;
             while ( PEDTokenizer.nextToken() != StreamTokenizer.TT_EOL  ) {
 
@@ -147,25 +159,44 @@ public class DerbyPEDImporter extends DerbySNPImporter implements Importer {
                 index++;
                 if ( index == 2) {
 
-                    String line = createTuple(individual.getId(), createSNP(MAPTokenizer,alleles[0], alleles[1]));
+                    String line = createTuple(id, createSNP(MAPTokenizer,alleles[0], alleles[1]));
                     bufferedWriter.write(line);
                     bufferedWriter.newLine();
                     index = 0;
+                    id++;
                 }
             }
             ResourceReleaser.close(bufferedWriter);
-            this.bulkImport(schemaName, tableName, getType(), temp);
+            this.bulkImport(schemaName, tableName, individual.getId(), getType(), temp);
             temp.delete();
         }
         catch (FileNotFoundException ex) {
             Logger.getLogger( this.getClass() ).error( ex );
+            throw new ImporterException( ImporterException.UNABLE_TO_READ_DATASET, getType());
         }
         catch (IOException ex) {
             Logger.getLogger( this.getClass() ).error( ex );
+            throw new ImporterException( ImporterException.TEMP_FILE_ERROR);
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger( this.getClass() ).error( ex );
+            throw new ImporterException( ImporterException.CONNECTION_FAILURE);
+        } catch (InstantiationException ex) {
+            Logger.getLogger( this.getClass() ).error( ex );
+            throw new ImporterException( ImporterException.CONNECTION_FAILURE);            
+        } catch (IllegalAccessException ex) {
+            Logger.getLogger( this.getClass() ).error( ex );
+            throw new ImporterException( ImporterException.CONNECTION_FAILURE);            
+        } catch (SQLException ex) {
+            Logger.getLogger( this.getClass() ).error( ex );
+            throw new ImporterException( ImporterException.CONNECTION_FAILURE);            
         }
         finally {
 
             ResourceReleaser.close(MAPReader);
+            
+            if ( temp != null && temp.exists() ) {
+                temp.delete();
+            } 
         }
 
     }

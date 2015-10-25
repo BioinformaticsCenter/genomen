@@ -84,10 +84,10 @@ public class AnalysisTask {
      * @param dataID id of the data
      * @return data that matches the definition
      */
-    public DataEntity getData( DataType dataType, String individualID, String dataID ) {
+    public DataEntity getData( DataType dataType, String individualID, String attribute, String dataID ) {
 
         DataSetDAO dataSetDAO = DAOFactory.getDAOFactory().getDataSetDAO();
-        return dataSetDAO.getDataEntity( Configuration.getConfiguration().getDatabaseTempSchemaName(), taskID, individualID, dataID, dataType);
+        return dataSetDAO.getDataEntity( Configuration.getConfiguration().getDatabaseTempSchemaName(), individualID, attribute, dataID, dataType);
     }
 
     /**
@@ -96,6 +96,9 @@ public class AnalysisTask {
     public void clearData() {
         TaskDAO taskDAO = DAOFactory.getDAOFactory().getTaskDAO();
         taskDAO.deleteAllTaskData( Configuration.getConfiguration().getDatabaseTempSchemaName(),taskID);
+        
+        DataSetDAO dataSetDAO = DAOFactory.getDAOFactory().getDataSetDAO();
+        dataSetDAO.removeIndividuals(getIndividuals());
     }
 
     /**

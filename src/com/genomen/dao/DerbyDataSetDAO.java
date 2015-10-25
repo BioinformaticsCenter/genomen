@@ -1,9 +1,12 @@
 package com.genomen.dao;
 
+import com.genomen.core.Configuration;
+import com.genomen.core.Individual;
 import com.genomen.entities.DataAttributeConverter;
 import com.genomen.entities.DataEntity;
 import com.genomen.entities.DataEntityAttributeValue;
 import com.genomen.entities.DataType;
+import com.genomen.entities.DataTypeManager;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -18,12 +21,12 @@ import org.apache.log4j.Logger;
  */
 public class DerbyDataSetDAO extends DerbyDAO implements DataSetDAO {
 
-    public DataEntity getDataEntity(String schemaName, String taskID, String individualID, String dataID, DataType dataType ) {
+    public DataEntity getDataEntity(String schemaName, String individualID, String attribute, String dataID, DataType dataType ) {
 
         Connection connection = null;
         DataEntity dataEntity = null;
         
-        String tableName = createTableName(taskID, dataType);
+        String tableName = createTableName(individualID, dataType);
              
         try {
             connection = DerbyDAOFactory.createConnection();
@@ -34,9 +37,8 @@ public class DerbyDataSetDAO extends DerbyDAO implements DataSetDAO {
         }
 
         try {
-            PreparedStatement statement = connection.prepareStatement("SELECT * FROM " + schemaName+ "." + tableName + " WHERE INDIVIDUAL_ID = ? AND ID = ?");
-            statement.setString( 1, individualID );
-            statement.setString( 2, dataID );           
+            PreparedStatement statement = connection.prepareStatement("SELECT * FROM " + schemaName+ "." + tableName + " WHERE " + attribute + " = ?");
+            statement.setString( 1, dataID );           
             ResultSet results = statement.executeQuery();
 
             dataEntity = createDataEntity(results, dataType);
@@ -91,7 +93,12 @@ public class DerbyDataSetDAO extends DerbyDAO implements DataSetDAO {
                     double attribute = resultSet.getDouble(attributeName);
                     dataEntityAttributes.put(attributeName, new DataEntityAttributeValue(attribute));
                     continue;
-                }               
+                }       
+                if ( DataAttributeConverter.sqlTypeToJava(attributeType) == DataAttributeConverter.BOOLEAN ) {
+                    boolean attribute = resultSet.getBoolean(attributeName);
+                    dataEntityAttributes.put(attributeName, new DataEntityAttributeValue(attribute));
+                    continue;
+                }                  
 
             }
             dataEntity = new DataEntity(dataType, dataEntityAttributes );
@@ -103,14 +110,13 @@ public class DerbyDataSetDAO extends DerbyDAO implements DataSetDAO {
     }
 
 
+    @Override
     public void createDataTable(String schemaName, String taskID, DataType dataType) {
 
         String tableName = createTableName( taskID, dataType );
         StringBuilder valuesBuilder = new StringBuilder();
         List<String> attributeNames = dataType.getAttributeNames();
-        
-        valuesBuilder.append("INDIVIDUAL_ID VARCHAR(100) NOT NULL, ");        
-        
+                   
         for ( int i = 0; i < attributeNames.size(); i++ ) {
             
             String attributeType = dataType.getAttributeType(attributeNames.get(i));
@@ -130,15 +136,91 @@ public class DerbyDataSetDAO extends DerbyDAO implements DataSetDAO {
             if ( dataType.isRequiredAttribute(attributeName)) {
                 valuesBuilder.append( " NOT NULL");
             }
-            
+                        
             valuesBuilder.append(", ");            
-        }
-      
-        valuesBuilder.append(" PRIMARY KEY(INDIVIDUAL_ID, ID)");        
+        }            
         
+        valuesBuilder.append( " ID BIGINT NOT NULL,");
+         valuesBuilder.append( "PRIMARY KEY (ID) ");
+     
         ContentDAO contentDAO = DAOFactory.getDAOFactory().getContentDAO();
         contentDAO.createTable(schemaName, tableName, valuesBuilder.toString());
 
     }
+    
+    public void removeIndividuals( List<Individual> individuals ) {
+        
+        Connection connection = null;
+     
+        try {
+            connection = DerbyDAOFactory.createConnection();
+        }
+        catch (Exception ex) {
+            Logger.getLogger( DerbyContentDAO.class ).debug(ex);
+            return;
+        }
+
+        try {
+            PreparedStatement statement = connection.prepareStatement("DELETE FROM " + Configuration.getConfiguration().getDatabaseTempSchemaName() + ".Individuals WHERE INDIVIDUAL_ID = ?");
+            
+            for ( Individual individual : individuals ) {
+                statement.setString( 1, individual.getId() );
+                statement.addBatch();
+            }
+
+            statement.executeBatch();
+            statement.close();
+
+
+        } catch (SQLException ex) {
+            Logger.getLogger( DerbyTraitDAO.class ).debug(ex);
+        }
+        finally {
+            closeConnection( connection );
+        }
+              
+    }
+
+    @Override
+    public int getCurrentId(String schemaName, String individualID, DataType dataType) {
+
+        Connection connection = null;
+        int currentID = -1;
+        
+        String tableName = createTableName(individualID.toUpperCase(), dataType );
+             
+        try {
+            connection = DerbyDAOFactory.createConnection();
+        }
+        catch (Exception ex) {
+            Logger.getLogger( DerbyContentDAO.class ).debug(ex);
+            return -1;
+        }
+
+        try {
+            PreparedStatement statement = connection.prepareStatement("SELECT MAX(ID) FROM " + Configuration.getConfiguration().getDatabaseTempSchemaName() +"."+tableName);        
+            ResultSet results = statement.executeQuery();
+
+            results.next();
+            currentID = 1 + results.getInt(1);
+                    
+
+            //Close the connection.
+            results.close();
+            statement.close();
+
+
+        } catch (SQLException ex) {
+            Logger.getLogger( DerbyTraitDAO.class ).debug(ex);
+        }
+        finally {
+            closeConnection( connection );
+        }
+        
+        return currentID;
+  
+        
+    }
+      
 
 }

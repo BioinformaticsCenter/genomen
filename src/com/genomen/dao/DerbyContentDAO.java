@@ -664,6 +664,7 @@ public class DerbyContentDAO extends DerbyDAO implements ContentDAO {
             PreparedStatement statement = connection.prepareStatement("CREATE TABLE " + schemaName +"." + tableName + " ( " + values + " )" );
             statement.executeUpdate();
             statement.close();
+        
         }
         catch (SQLException ex) {
            Logger.getLogger( DerbyContentDAO.class ).error(ex);
@@ -688,5 +689,4 @@ public class DerbyContentDAO extends DerbyDAO implements ContentDAO {
 
         return isCreated;
     }
-
 }

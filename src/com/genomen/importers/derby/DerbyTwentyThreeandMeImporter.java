@@ -5,6 +5,7 @@ import com.genomen.importers.derby.DerbySNPImporter;
 import com.genomen.core.Individual;
 import com.genomen.entities.DataEntityAttributeValue;
 import com.genomen.importers.Importer;
+import com.genomen.importers.ImporterException;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -17,6 +18,7 @@ import java.util.LinkedList;
 import java.util.List;
 import org.apache.log4j.Logger;
 import com.genomen.utils.ResourceReleaser;
+import java.util.ArrayList;
 
 
 /** 
@@ -32,7 +34,7 @@ public class DerbyTwentyThreeandMeImporter extends DerbySNPImporter implements I
 
 
     @Override
-    public List<Individual> importDataSet( String schemaName, String taskID, String individualID, String[] fileNames ) {
+    public List<Individual> importDataSet( String schemaName, String taskID, String individualID, String[] fileNames ) throws ImporterException {
 
         List<Individual> individualList = new LinkedList<Individual>();        
         
@@ -45,35 +47,49 @@ public class DerbyTwentyThreeandMeImporter extends DerbySNPImporter implements I
 
 
         //Create Individual for the data presented in the file
-        Individual individual = new Individual(individualID);
+        Individual individual = new Individual(individualID);  
         individualList.add(individual);
+        
+        //Add individual to database
+        List<String> individualIDs = new ArrayList<>();
+        individualIDs.add(individualID);
+        //If an individual with the same id already exists or database command can not be established, abort process.
+        if ( !insertIndividuals( individualIDs ) ) {
+            throw new ImporterException(  ImporterException.INDIVIDUAL_ID_ERROR, individualID );
+        }
+        
         if ( !file.exists() || !file.canRead() ) {
-            Logger.getLogger(DerbyTwentyThreeandMeImporter.class ).error( "Unable to open file" + file.getAbsolutePath() );
-            return individualList;
+            throw new ImporterException(  ImporterException.UNABLE_TO_READ_DATASET, file.getName() );
         }
         BufferedReader bufferedReader = null;
         BufferedWriter bufferedWriter = null;
+        
+        File tempFile = null;
         try {
 
             FileReader fileReader = new FileReader(file);
             bufferedReader = new BufferedReader( fileReader );
 
-            File tempFile = new File( Configuration.getConfiguration().getTmpFolderPath() + taskID.concat(individualID).concat(TEMP_FILE_NAME));
+            tempFile = new File( Configuration.getConfiguration().getTmpFolderPath() + taskID.concat(individualID).concat(TEMP_FILE_NAME));
             tempFile.getParentFile().mkdirs();
             bufferedWriter = new BufferedWriter( new FileWriter(tempFile));
 
             String line;
 
-
+            int id = getCurrentId( individualID, getType());   
+            
+            if ( id == DerbyImporter.INVALID_ID) {
+                throw new ImporterException( ImporterException.DATA_TABLE_INDEX_ERROR, getType());
+            }
 
             while ( ( line = bufferedReader.readLine() ) != null )  {
 
                if ( line.matches(FORMAT_REGEXP) ) {
 
-                    String tuple = createTuple( individualID, extractSNPData(line) );
+                    String tuple = createTuple( id, extractSNPData(line) );
                     bufferedWriter.write(tuple);
                     bufferedWriter.newLine();
-
+                    id++;
                }
                else if ( !line.startsWith("#")) {
                     Logger.getLogger(DerbyTwentyThreeandMeImporter.class ).error( "Corrupted line in " + file.getPath() + " : " + line );
@@ -82,22 +98,31 @@ public class DerbyTwentyThreeandMeImporter extends DerbySNPImporter implements I
             }
             
             ResourceReleaser.close(bufferedWriter);
-            this.bulkImport(schemaName, taskID, getType(), tempFile);
+            this.bulkImport(schemaName, taskID, individualID,getType(), tempFile);
             tempFile.delete();
         }
  
         catch (FileNotFoundException ex) {
             Logger.getLogger(DerbyTwentyThreeandMeImporter.class ).debug(ex);
-        }        catch ( IOException ex ) {
+            throw new ImporterException( ImporterException.UNABLE_TO_READ_DATASET);
+        }        
+        catch ( IOException ex ) {
             Logger.getLogger(DerbyTwentyThreeandMeImporter.class ).debug(ex);
+            throw new ImporterException( ImporterException.TEMP_FILE_ERROR);
         }
         finally {
             ResourceReleaser.close(bufferedReader);
+            if ( tempFile != null && tempFile.exists() ) {
+                tempFile.delete();
+            } 
         }
+        
+        
+        
 
         return individualList;
     }
-
+    
     private HashMap<String, DataEntityAttributeValue> extractSNPData( String line ) {
 
         String[] columns = line.split(COLUMN_SEPARATOR);

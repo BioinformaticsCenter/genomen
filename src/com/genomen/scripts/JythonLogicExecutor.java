@@ -47,23 +47,24 @@ public class JythonLogicExecutor {
      * Compares given value to source data
      * @param type type of the data
      * @param individual individual(source) to whom the data is associated
-     * @param genotypeId genotype id of the data
+     * @param dataAttributeID id of the attribute of to be to be retrieved for comparison
+     * @param dataAttributeValue value of the attribute to be retrieved for comparison 
      * @param attribute name of the attribute 
      * @param value value of the data
      * @return result of comparison as an instance of <code>LogicResult</code>
      */
-    public LogicResult compareToData( String type, Individual individual, String genotypeId, String attribute,  String value ) {
+    public LogicResult compareToData( String type, Individual individual, String dataAttributeID, String dataAttributeValue, String attribute,  String value ) {
 
         DataType dataType = DataTypeManager.getDataType(type);
         
         LogicResult result = new LogicResult();
         result.setType(LogicResult.BOOLEAN);
 
-        DataEntity dataEntity = analysisTask.getData( dataType, individual.getId(), genotypeId );
+        DataEntity dataEntity = analysisTask.getData( dataType, individual.getId(), dataAttributeID, dataAttributeValue );
 
 
         if ( dataEntity == null ) {
-            result.addMissingGenotype(genotypeId);
+            result.addMissingGenotype(dataAttributeValue);
             result.setResult(true);
             result.setValue(value);
             result.setUnresolvable(true);

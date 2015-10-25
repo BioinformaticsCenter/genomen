@@ -18,7 +18,8 @@ public class Error {
         CANCELLED(2),
         CORE_SHUTDOWN(3),
         CAN_NOT_READ_FILE(4),
-        ANALYSIS_NOT_AVAILABLE(5);
+        ANALYSIS_NOT_AVAILABLE(5),
+        UNABLE_TO_IMPORT(6);
         
         private final int id;
         

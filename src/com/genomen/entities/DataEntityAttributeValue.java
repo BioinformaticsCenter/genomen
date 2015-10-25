@@ -8,6 +8,7 @@ public final class DataEntityAttributeValue {
     
     private final double numericValue;
     private final String textValue;
+    private final boolean booleanValue;
     
     /**
      * Gets the <code>int</code> value of this attribute;
@@ -40,6 +41,7 @@ public final class DataEntityAttributeValue {
     public DataEntityAttributeValue( double p_numericValue ) {
         numericValue = p_numericValue;
         textValue = Double.toString(p_numericValue);
+        booleanValue = (p_numericValue >= 1) ? true : false;
     }
     
     /**
@@ -48,7 +50,8 @@ public final class DataEntityAttributeValue {
      */
     public DataEntityAttributeValue( int p_numericValue ) {
         numericValue = p_numericValue;
-        textValue = Integer.toString(p_numericValue);        
+        textValue = Integer.toString(p_numericValue);    
+        booleanValue = (p_numericValue >= 1) ? true : false;
     }
     
     /**
@@ -58,6 +61,24 @@ public final class DataEntityAttributeValue {
     public DataEntityAttributeValue( String p_textValue ) {        
         textValue = p_textValue;
         numericValue = 0;      
+        booleanValue = (p_textValue != null) ? true : false;        
+    }
+    
+    /**
+     * Constructs an attribute value with the given text.
+     * @param p_booleanValue value of this attribute as <code>boolean</code>
+     */
+    public DataEntityAttributeValue( boolean p_booleanValue ) {        
+        textValue = String.valueOf(p_booleanValue);
+        numericValue = (p_booleanValue) ? 1 : 0;;      
+        booleanValue = p_booleanValue;        
+    }    
+
+    /**
+     * @return the booleanValue
+     */
+    public boolean isBooleanValue() {
+        return booleanValue;
     }
        
     

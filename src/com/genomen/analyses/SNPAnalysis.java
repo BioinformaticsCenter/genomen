@@ -70,6 +70,7 @@ public class SNPAnalysis extends AnalyzationLogic {
 
             snpResultEntity.addTag(this.getTag());
             results.addResult(snpResultEntity);
+
         }
     }
 
