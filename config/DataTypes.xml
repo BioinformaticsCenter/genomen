@@ -1,12 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?> 
 <dataTypes>
 	<dataType>
-		<id>SNP</id>
-		<attribute name="ID" type="VARCHAR" required="true" size="100"/>
+		<id>INDIVIDUAL</id>
+		<attribute name="SAMPLE_ID" type="INT" required="true"/>                
+		<attribute name="INDIVIDUAL_NAME" type="VARCHAR" size="100"/>	               			
+	</dataType>          
+	<dataType>
+		<id>VARIANT</id>
+                <attribute name="VARIANT_ID" type="VARCHAR" required="true" size="100"/>
 		<attribute name="CHROMOSOME" type="VARCHAR" size="100"/>
 		<attribute name="SEQUENCE_START" type="INT"/>		
 		<attribute name="SEQUENCE_END" type="INT"/>		
 		<attribute name="STRAND" type="INT"/>			
-		<attribute name="ALLELE" type="VARCHAR" size="100"/>			
-	</dataType>
+		<attribute name="ALLELE" type="VARCHAR" size="200"/>	
+	               			
+	</dataType>   
+	<dataType>
+		<id>VARIANT_METADATA</id>
+		<attribute name="VARIANT_ID" type="INT" required="true"/>
+		<attribute name="NAME" type="VARCHAR" size="100"/>
+		<attribute name="VALUE" type="VARCHAR size 200"/>			               			
+	</dataType>                       
+         
 </dataTypes>
