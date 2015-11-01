@@ -18,6 +18,7 @@ import org.apache.log4j.Logger;
  */
 public class DerbyContentDAO extends DerbyDAO implements ContentDAO {
 
+    @Override
     public List<String[]> getTableContents( String schemaName, String tableName) {
 
         LinkedList<String[]> rows = new LinkedList<String[]>();

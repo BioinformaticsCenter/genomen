@@ -14,10 +14,9 @@ public abstract class DerbySNPImporter extends DerbyImporter {
     public static final String SEQUENCE_END = "SEQUENCE_END";     
     public static final String STRAND = "STRAND";      
     public static final String ALLELE = "ALLELE";        
-
-    public DerbySNPImporter() {
-        super("VARIANT");
-    }
+    
+    public static final String VARIANT = "VARIANT";
+    public static final String VARIANT_INFO = "VARIANT_INFO";
 
 
 

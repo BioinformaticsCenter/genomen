@@ -19,7 +19,11 @@ public class DerbyImporterFactory extends ImporterFactory{
         if ( fileType.equalsIgnoreCase(PED)) {
 
                 parser = new DerbyPEDImporter();
-        }        
+        }      
+        if ( fileType.equalsIgnoreCase(VCF)) {
+
+                parser = new DerbyVCFImporter();
+        }          
 
     return parser;
     }

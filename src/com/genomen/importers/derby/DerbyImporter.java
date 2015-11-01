@@ -25,25 +25,8 @@ import org.apache.log4j.Logger;
  */
 public abstract class DerbyImporter extends DerbyDAO {
 
-    private String type = "";
     
     public static final int INVALID_ID = -1;
-
-    /*
-     * Importer for the data type given as a parameter
-     * @param p_type type code for imported data.
-     */
-    public DerbyImporter( String p_type  ) {
-        type = p_type;
-    }
-
-    /**
-     * Gets the the type of data this importer is used to import
-     * @return the type of data
-     */
-    public String getType() {
-        return type;
-    }
 
     /**
      * Inserts a list of samples into the sample table.
@@ -101,7 +84,7 @@ public abstract class DerbyImporter extends DerbyDAO {
         
         TaskDAO taskDAO = DAOFactory.getDAOFactory().getTaskDAO();
         DataSetDAO dataSetDAO = DAOFactory.getDAOFactory().getDataSetDAO();
-        DataType dataType = DataTypeManager.getDataType(getType());
+        DataType dataType = DataTypeManager.getDataType(type);
         String tableName = dataSetDAO.createTableName(individualID.toUpperCase(), dataType );
 
         //If table for this data type has not been already created
@@ -138,7 +121,7 @@ public abstract class DerbyImporter extends DerbyDAO {
      * @param attributes Attributes of a data entity presented as a set of <code>DataEntityAttributeValue</code> instances
      * @return String representation of a data entity
      */
-    protected String createTuple( int id, HashMap<String, DataEntityAttributeValue> attributes ) {
+    protected String createTuple( int id, HashMap<String, DataEntityAttributeValue> attributes, String type ) {
 
         StringBuilder tuple = new StringBuilder();
        

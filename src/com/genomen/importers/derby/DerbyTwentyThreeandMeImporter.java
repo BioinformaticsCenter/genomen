@@ -76,17 +76,17 @@ public class DerbyTwentyThreeandMeImporter extends DerbySNPImporter implements I
 
             String line;
 
-            int id = getCurrentId( individualID, getType());   
+            int id = getCurrentId( individualID, DerbySNPImporter.VARIANT);   
             
             if ( id == DerbyImporter.INVALID_ID) {
-                throw new ImporterException( ImporterException.DATA_TABLE_INDEX_ERROR, getType());
+                throw new ImporterException( ImporterException.DATA_TABLE_INDEX_ERROR, DerbySNPImporter.VARIANT);
             }
 
             while ( ( line = bufferedReader.readLine() ) != null )  {
 
                if ( line.matches(FORMAT_REGEXP) ) {
 
-                    String tuple = createTuple( id, extractSNPData(line) );
+                    String tuple = createTuple( id, extractSNPData(line), DerbySNPImporter.VARIANT );
                     bufferedWriter.write(tuple);
                     bufferedWriter.newLine();
                     id++;
@@ -98,7 +98,7 @@ public class DerbyTwentyThreeandMeImporter extends DerbySNPImporter implements I
             }
             
             ResourceReleaser.close(bufferedWriter);
-            this.bulkImport(schemaName, taskID, individualID,getType(), tempFile);
+            this.bulkImport(schemaName, taskID, individualID,DerbySNPImporter.VARIANT, tempFile);
             tempFile.delete();
         }
  

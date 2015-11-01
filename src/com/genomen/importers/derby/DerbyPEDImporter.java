@@ -141,10 +141,10 @@ public class DerbyPEDImporter extends DerbySNPImporter implements Importer {
             
             String[] alleles = new String[2];
 
-            int id = getCurrentId( individual.getId(), getType());   
+            int id = getCurrentId( individual.getId(), DerbySNPImporter.VARIANT );   
             
             if ( id == DerbyImporter.INVALID_ID) {
-                throw new ImporterException( ImporterException.DATA_TABLE_INDEX_ERROR, getType());
+                throw new ImporterException( ImporterException.DATA_TABLE_INDEX_ERROR, DerbySNPImporter.VARIANT);
             }
             
             int index = 0;
@@ -159,7 +159,7 @@ public class DerbyPEDImporter extends DerbySNPImporter implements Importer {
                 index++;
                 if ( index == 2) {
 
-                    String line = createTuple(id, createSNP(MAPTokenizer,alleles[0], alleles[1]));
+                    String line = createTuple(id, createSNP(MAPTokenizer,alleles[0], alleles[1]), DerbySNPImporter.VARIANT);
                     bufferedWriter.write(line);
                     bufferedWriter.newLine();
                     index = 0;
@@ -167,12 +167,12 @@ public class DerbyPEDImporter extends DerbySNPImporter implements Importer {
                 }
             }
             ResourceReleaser.close(bufferedWriter);
-            this.bulkImport(schemaName, tableName, individual.getId(), getType(), temp);
+            this.bulkImport(schemaName, tableName, individual.getId(), DerbySNPImporter.VARIANT, temp);
             temp.delete();
         }
         catch (FileNotFoundException ex) {
             Logger.getLogger( this.getClass() ).error( ex );
-            throw new ImporterException( ImporterException.UNABLE_TO_READ_DATASET, getType());
+            throw new ImporterException( ImporterException.UNABLE_TO_READ_DATASET, DerbySNPImporter.VARIANT);
         }
         catch (IOException ex) {
             Logger.getLogger( this.getClass() ).error( ex );
