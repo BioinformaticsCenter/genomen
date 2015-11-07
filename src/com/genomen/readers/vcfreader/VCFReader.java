@@ -26,7 +26,7 @@ public class VCFReader {
     private static final Pattern METADATA_ROW_REGEXP = Pattern.compile("^##.+");
     private static final Pattern HEADER_ROW_REGEXP = Pattern.compile("^#CHROM\\tPOS\\tID\\tREF\\tALT\\tQUAL\\tFILTER\\tINFO(\\tFORMAT)?(\\t[a-zA-Z0-9_]+)*");
     private static final Pattern VALID_FORMAT_REGEXP = Pattern.compile("^##fileformat=VCFv.*");
-    private static final Pattern INFO_REGEXP = Pattern.compile("^##INFO=<ID=[a-zA-Z0-9_]+,Number=[0-9]+,Type=[a-zA-Z]+,Description=\".+\"(,Source=[a-zA-Z0-9_:/]+)?(,Version=[a-zA-Z0-9.]+)?>");
+    private static final Pattern INFO_REGEXP = Pattern.compile("^##INFO=<ID=[a-zA-Z0-9_]+,Number=[0-9.]+,Type=[a-zA-Z]+,Description=\".+\"(,Source=[a-zA-Z0-9_:/]+)?(,Version=[a-zA-Z0-9.]+)?>");
     private static final Pattern FORMAT_REGEXP = Pattern.compile("^##FORMAT=<ID=[a-zA-Z0-9_]+,Number=[0-9]+,Type=[a-zA-Z]+,Description=\".+\">");
     private static final Pattern FILTER_REGEXP = Pattern.compile("^##FILTER=<ID=[a-zA-Z0-9_]+,Description=\".+\">");
     private static final Pattern ALT_REGEXP = Pattern.compile("^##FILTER=<ID=[a-zA-Z0-9_]+,Description=\".+\">");    
@@ -60,6 +60,7 @@ public class VCFReader {
     private static final String PARAMETER_SEPARATOR = ";";
     private static final String GENOTYPE_SEPARATOR = ":";
     private static final String KEY_VALUE_SEPARATOR = "=";
+    private static final String ANY_VALUE = ".";
     
     private static final int GENOTYPE_START = 9;
     
@@ -280,7 +281,14 @@ public class VCFReader {
                 //Try matching the current row to known metadata definitions.
                 if ( INFO_REGEXP.matcher(nextLine).matches()) {
                     valueMap = extractValueMap(split[1]);
-                    info.put(valueMap.get(ID), new VCFInfo(valueMap.get(ID), Integer.parseInt( valueMap.get(NUMBER)), valueMap.get(TYPE), valueMap.get(DESCRIPTION), valueMap.get(SOURCE), valueMap.get(VERSION)));
+                    
+                    //If the number attribute does not have a definite value use -1 to present this.
+                    String numberString = valueMap.get(NUMBER);
+                    int numberNumeric = -1;
+                    if (!numberString.equals(ANY_VALUE)) {
+                        numberNumeric = Integer.parseInt( valueMap.get(NUMBER));
+                    }
+                    info.put(valueMap.get(ID), new VCFInfo(valueMap.get(ID), numberNumeric, valueMap.get(TYPE), valueMap.get(DESCRIPTION), valueMap.get(SOURCE), valueMap.get(VERSION)));
                 }
                 if ( FORMAT_REGEXP.matcher(nextLine).matches()) {
                     valueMap = extractValueMap(split[1]);
