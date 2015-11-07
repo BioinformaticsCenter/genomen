@@ -443,9 +443,9 @@ public class VCFReader {
                 infoValues[i][0] = infoKeyValue[0];
                 infoValues[i][1] = infoKeyValue[1];
             }
-            if ( infoValues.length == 1) {
+            if ( infoKeyValue.length == 1) {
                 infoValues[i][0] = infoKeyValue[0];
-                infoValues[i][1] = null;
+                infoValues[i][1] = infoKeyValue[0];
             }
         }
         
