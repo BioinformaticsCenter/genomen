@@ -6,7 +6,6 @@ import com.genomen.entities.DataEntityAttributeValue;
 import com.genomen.importers.Importer;
 import com.genomen.importers.ImporterException;
 import com.genomen.readers.vcfreader.VCFException;
-import com.genomen.readers.vcfreader.VCFFormat;
 import com.genomen.readers.vcfreader.VCFInfo;
 import com.genomen.readers.vcfreader.VCFReader;
 import com.genomen.readers.vcfreader.VCFRow;
@@ -20,6 +19,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import org.apache.log4j.Logger;
 
 /**
@@ -35,8 +35,8 @@ public class DerbyVCFImporter extends DerbySNPImporter implements Importer{
     private static final String DELETED = "-";
 
     
-    private int variantId;
-    private int variantInfoId;
+    private Map<String,Integer> variantIndexes = new HashMap<String, Integer>();
+    private Map<String,Integer> variantInfoIndexes = new HashMap<String, Integer>();;
     private VCFReader vcfReader;
     
     @Override
@@ -69,6 +69,21 @@ public class DerbyVCFImporter extends DerbySNPImporter implements Importer{
             tempVariantInfoFiles.add( new File( Configuration.getConfiguration().getTmpFolderPath() + taskID.concat(id).concat(TEMP_VARIANT_INDO_FILE_NAME)));
         }
           
+        //Find valid indexes for all tables
+        for ( String id: sampleIDs) {
+            int variantIndex = getCurrentId( individualID, DerbySNPImporter.VARIANT);
+            if ( variantIndex == DerbyImporter.INVALID_ID) {
+                throw new ImporterException( ImporterException.DATA_TABLE_INDEX_ERROR, DerbySNPImporter.VARIANT);
+            }            
+            variantIndexes.put(id, variantIndex);
+
+            int variantInfoIndex = getCurrentId( individualID, DerbySNPImporter.VARIANT_INFO);
+            if ( variantInfoIndex == DerbyImporter.INVALID_ID) {
+                throw new ImporterException( ImporterException.DATA_TABLE_INDEX_ERROR, DerbySNPImporter.VARIANT_INFO);
+            }            
+            variantInfoIndexes.put(id, variantInfoIndex);
+        }
+        
         try {
             
             //Create writer for every tmp file.
@@ -79,25 +94,14 @@ public class DerbyVCFImporter extends DerbySNPImporter implements Importer{
                 infoWriters.add( new BufferedWriter( new FileWriter( tempVariantInfoFiles.get(i) )) );
             }            
             
-            VCFRow row;
-
-            //Get the current valid indexes for new entries.
-            variantId = getCurrentId( individualID, DerbySNPImporter.VARIANT);   
-            variantInfoId = getCurrentId( individualID, DerbySNPImporter.VARIANT_INFO);   
-            
-            if ( variantId == DerbyImporter.INVALID_ID) {
-                throw new ImporterException( ImporterException.DATA_TABLE_INDEX_ERROR, DerbySNPImporter.VARIANT);
-            }
-            if ( variantInfoId == DerbyImporter.INVALID_ID) {
-                throw new ImporterException( ImporterException.DATA_TABLE_INDEX_ERROR, DerbySNPImporter.VARIANT_INFO);
-            }
-            
+            VCFRow row;  
+                  
             //Loop through all variants and write variants to sample specific tmp files.
             while ( ( row = vcfReader.readNextRow() ) != null )  {
                 //Write genotypes
                 for ( int i = 0; i < sampleIDs.size(); i++) {
                     writeGenotype( sampleIDs.get(i), row, vcfReader, variantWriters.get(i), infoWriters.get(i) );
-                    writeVariantInfo( row, vcfReader, infoWriters.get(i) );
+                    writeVariantInfo( sampleIDs.get(i),row, vcfReader, infoWriters.get(i) );
                 }        
             }
             
@@ -154,29 +158,28 @@ public class DerbyVCFImporter extends DerbySNPImporter implements Importer{
                 attributes.put(DerbySNPImporter.ALLELE, new DataEntityAttributeValue(alleles.toString()) );         
                 attributes.put(DerbySNPImporter.STRAND, new DataEntityAttributeValue(-1) );    
                 
-                String tuple = createTuple( variantId, attributes, DerbySNPImporter.VARIANT );
+                String tuple = createTuple( variantIndexes.get(sampleID), attributes, DerbySNPImporter.VARIANT );
                 variantWriter.write(tuple);
                 variantWriter.newLine();
-                variantId++;
+                incrementIndex(variantIndexes, sampleID);
             }
             //Otherwise write it as additional variant related data
             else {
-                VCFFormat format = reader.getFormat( formatName);
-
+                
                 HashMap<String, DataEntityAttributeValue> attributes = new HashMap<String, DataEntityAttributeValue>();
-                attributes.put(DerbySNPImporter.VARIANT_ID, new DataEntityAttributeValue(variantId) );      
+                attributes.put(DerbySNPImporter.VARIANT_ID, new DataEntityAttributeValue(variantIndexes.get(sampleID)) );      
                 attributes.put(DerbySNPImporter.NAME, new DataEntityAttributeValue(formatName) );          
                 attributes.put(DerbySNPImporter.VALUE, new DataEntityAttributeValue(genotype) );           
                 
-                String tuple = createTuple( variantInfoId, attributes, DerbySNPImporter.VARIANT_INFO );
+                String tuple = createTuple( variantInfoIndexes.get(sampleID), attributes, DerbySNPImporter.VARIANT_INFO );
                 infoWriter.write(tuple);
                 infoWriter.newLine();
-                variantInfoId++;      
+                incrementIndex(variantInfoIndexes, sampleID);     
             }  
         }
     }
 
-    private void writeVariantInfo( VCFRow row, VCFReader reader, BufferedWriter infoWriter ) throws IOException {
+    private void writeVariantInfo( String sampleID, VCFRow row, VCFReader reader, BufferedWriter infoWriter ) throws IOException {
                 
         for ( int f = 0; f < row.getInfo().length; f++ ) {
             
@@ -185,7 +188,7 @@ public class DerbyVCFImporter extends DerbySNPImporter implements Importer{
             VCFInfo vcfInfo = reader.getInfo(infoId);
 
             HashMap<String, DataEntityAttributeValue> attributes = new HashMap<String, DataEntityAttributeValue>();
-            attributes.put(DerbySNPImporter.VARIANT_ID, new DataEntityAttributeValue(variantId) );
+            attributes.put(DerbySNPImporter.VARIANT_ID, new DataEntityAttributeValue(variantIndexes.get(sampleID)) );
 
             //Flags have no value, therefore the name of the flag is used as a value of the flag.
             if ( vcfInfo.getType().equals( VCFEntry.FLAG)) {      
@@ -198,10 +201,10 @@ public class DerbyVCFImporter extends DerbySNPImporter implements Importer{
                 attributes.put(DerbySNPImporter.VALUE, new DataEntityAttributeValue(infoValue) ); 
             }
         
-            String tuple = createTuple( variantInfoId, attributes, DerbySNPImporter.VARIANT_INFO );
+            String tuple = createTuple( variantInfoIndexes.get(sampleID), attributes, DerbySNPImporter.VARIANT_INFO );
             infoWriter.write(tuple);
             infoWriter.newLine();
-            variantInfoId++; 
+            incrementIndex(variantInfoIndexes, sampleID);
  
         }
     }    
@@ -244,6 +247,7 @@ public class DerbyVCFImporter extends DerbySNPImporter implements Importer{
         int refIndex = 0;
         int alleleIndex = 0;
         while ( alleleIndex < allele.length()  || refIndex < ref.length()) {
+                               
             if ( refIndex >= ref.length()-1 && alleleIndex < allele.length() -1 ) {
                 decoded = decoded.concat(allele.substring(alleleIndex, alleleIndex+1));
                 alleleIndex++;
@@ -253,17 +257,18 @@ public class DerbyVCFImporter extends DerbySNPImporter implements Importer{
             if ( alleleIndex >= allele.length() -1 && refIndex < ref.length()-1) {
                 decoded = decoded.concat(DELETED);
                 refIndex++;
+                alleleIndex++;
                 continue;
             }
-            
-            if ( !ref.substring(refIndex, refIndex+1 ).equals(allele.substring(alleleIndex, alleleIndex+1)) ) {
+            if ( ( alleleIndex < allele.length()  && refIndex < ref.length()) && !ref.substring(refIndex, refIndex+1 ).equals(allele.substring(alleleIndex, alleleIndex+1)) ) {
                 decoded = decoded.concat(allele.substring(alleleIndex, alleleIndex+1));
-                alleleIndex++;
-            }
+                alleleIndex++;     
+                continue;
+            }  
             alleleIndex++;
-            refIndex++;
-        }
+            refIndex++; 
 
+        }
         return decoded;
     }
     
@@ -302,6 +307,11 @@ public class DerbyVCFImporter extends DerbySNPImporter implements Importer{
             return max;
         }
         
+    }
+    
+    private void incrementIndex( Map<String,Integer> indexMap, String id) {
+        Integer index = indexMap.get(id);
+        indexMap.replace(id, index +1);
     }
        
     

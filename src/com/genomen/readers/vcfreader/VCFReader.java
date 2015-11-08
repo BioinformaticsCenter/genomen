@@ -393,7 +393,6 @@ public class VCFReader {
     /**
      * Returns the next data row from the file or <code>null</code> if no more rows exist.
      * @return the next data row or <code>null</code> if no more rows exist.
-     * @throws com.genomen.readers.vcfreader.VCFReader.VCFException
      */
     public VCFRow readNextRow() throws VCFException {
         try {

@@ -51,7 +51,7 @@ public class DerbyTwentyThreeandMeImporter extends DerbySNPImporter implements I
         individualList.add(individual);
         
         //Add individual to database
-        List<String> individualIDs = new ArrayList<>();
+        List<String> individualIDs = new ArrayList<String>();
         individualIDs.add(individualID);
         //If an individual with the same id already exists or database command can not be established, abort process.
         if ( !insertIndividuals( individualIDs ) ) {

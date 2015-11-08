@@ -15,6 +15,11 @@ public abstract class DerbySNPImporter extends DerbyImporter {
     public static final String STRAND = "STRAND";      
     public static final String ALLELE = "ALLELE";        
     
+    public static final String VARIANT_ID = "VARIANT_ID";    
+    public static final String TYPE = "TYPE";    
+    public static final String NAME = "NAME";      
+    public static final String VALUE = "VALUE";      
+    
     public static final String VARIANT = "VARIANT";
     public static final String VARIANT_INFO = "VARIANT_INFO";
 
