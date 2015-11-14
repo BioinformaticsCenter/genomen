@@ -24,7 +24,10 @@ public class ArgumentProcessor {
     
     private static final String COMMAND_ANALYSES = "-a";
     private static final String VALID_ANALYSES_REG_EXP = "^[\\w\\.]+";    
-    private static final String ANALYSES_ARGUMENT_SEPARATOR = ",";       
+    private static final String ANALYSES_ARGUMENT_SEPARATOR = ",";    
+    
+    private static final String COMMAND_SAMPLE = "-s";
+    private static final String VALID_SAMPLE_REG_EXP = "^\\w+";
     
     private static final String COMMAND_FILE = "-i";
     private static final String VALID_FILE_REG_EXP = "^[A-Za-z0-9_/\\.]+(:[A-Za-z0-9_/\\.]+)*,\\w+(,\\w+)";

@@ -149,8 +149,7 @@ public class DerbyTwentyThreeandMeImporter extends DerbySNPImporter implements I
         
         attributes.put(DerbySNPImporter.ID, new DataEntityAttributeValue(id) );
         attributes.put(DerbySNPImporter.CHROMOSOME, new DataEntityAttributeValue(chromosome) );        
-        attributes.put(DerbySNPImporter.SEQUENCE_START, new DataEntityAttributeValue(start) );   
-        attributes.put(DerbySNPImporter.SEQUENCE_END, new DataEntityAttributeValue(start+1) );          
+        attributes.put(DerbySNPImporter.SEQUENCE_START, new DataEntityAttributeValue(start) );           
         attributes.put(DerbySNPImporter.ALLELE, new DataEntityAttributeValue(allele) );         
         attributes.put(DerbySNPImporter.STRAND, new DataEntityAttributeValue(-1) );     
         

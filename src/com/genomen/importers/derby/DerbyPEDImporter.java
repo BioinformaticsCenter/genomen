@@ -220,8 +220,7 @@ public class DerbyPEDImporter extends DerbySNPImporter implements Importer {
         
         attributes.put(DerbySNPImporter.ID, new DataEntityAttributeValue(snpID) );
         attributes.put(DerbySNPImporter.CHROMOSOME, new DataEntityAttributeValue(chromosome) );        
-        attributes.put(DerbySNPImporter.SEQUENCE_START, new DataEntityAttributeValue(start) );   
-        attributes.put(DerbySNPImporter.SEQUENCE_END, new DataEntityAttributeValue(end) );          
+        attributes.put(DerbySNPImporter.SEQUENCE_START, new DataEntityAttributeValue(start) );            
         attributes.put(DerbySNPImporter.ALLELE, new DataEntityAttributeValue(allele) );         
         attributes.put(DerbySNPImporter.STRAND, new DataEntityAttributeValue(-1) );          
         

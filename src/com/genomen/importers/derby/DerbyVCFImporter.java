@@ -153,8 +153,7 @@ public class DerbyVCFImporter extends DerbySNPImporter implements Importer{
                 HashMap<String, DataEntityAttributeValue> attributes = new HashMap<String, DataEntityAttributeValue>();
                 attributes.put(DerbySNPImporter.ID, new DataEntityAttributeValue(id) );
                 attributes.put(DerbySNPImporter.CHROMOSOME, new DataEntityAttributeValue(chromosome) );        
-                attributes.put(DerbySNPImporter.SEQUENCE_START, new DataEntityAttributeValue(start) );   
-                attributes.put(DerbySNPImporter.SEQUENCE_END, new DataEntityAttributeValue(start+alleles.getLength()) );          
+                attributes.put(DerbySNPImporter.SEQUENCE_START, new DataEntityAttributeValue(start) );            
                 attributes.put(DerbySNPImporter.ALLELE, new DataEntityAttributeValue(alleles.toString()) );         
                 attributes.put(DerbySNPImporter.STRAND, new DataEntityAttributeValue(-1) );    
                 
@@ -294,19 +293,7 @@ public class DerbyVCFImporter extends DerbySNPImporter implements Importer{
             }
             return combined;
         }
-        
-        public int getLength() {
-            
-            int max = 0;
-            
-            for ( String sequence : sequences ) {
-                if ( sequence.length() > max ) {
-                    max = sequence.length();
-                }
-            }
-            return max;
-        }
-        
+             
     }
     
     private void incrementIndex( Map<String,Integer> indexMap, String id) {
