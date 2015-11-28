@@ -34,7 +34,7 @@ public class DerbyTwentyThreeandMeImporter extends DerbySNPImporter implements I
 
 
     @Override
-    public List<Individual> importDataSet( String schemaName, String taskID, String individualID, String[] fileNames ) throws ImporterException {
+    public List<Individual> importDataSet( String schemaName, String individualID, String[] fileNames ) throws ImporterException {
 
         List<Individual> individualList = new LinkedList<Individual>();        
         
@@ -70,7 +70,7 @@ public class DerbyTwentyThreeandMeImporter extends DerbySNPImporter implements I
             FileReader fileReader = new FileReader(file);
             bufferedReader = new BufferedReader( fileReader );
 
-            tempFile = new File( Configuration.getConfiguration().getTmpFolderPath() + taskID.concat(individualID).concat(TEMP_FILE_NAME));
+            tempFile = new File( Configuration.getConfiguration().getTmpFolderPath() + individualID.concat(TEMP_FILE_NAME));
             tempFile.getParentFile().mkdirs();
             bufferedWriter = new BufferedWriter( new FileWriter(tempFile));
 
@@ -98,7 +98,7 @@ public class DerbyTwentyThreeandMeImporter extends DerbySNPImporter implements I
             }
             
             ResourceReleaser.close(bufferedWriter);
-            this.bulkImport(schemaName, taskID, individualID,DerbySNPImporter.VARIANT, tempFile);
+            this.bulkImport(schemaName, individualID,DerbySNPImporter.VARIANT, tempFile);
             tempFile.delete();
         }
  

@@ -75,22 +75,21 @@ public abstract class DerbyImporter extends DerbyDAO {
     /**
      * Bulk imports a preformed table presentation of a dataset into the database.
      * @param schemaName Name of the schema used for the dataset
-     * @param taskID ID of the task to which the inserted dataset is associated
      * @param individualID id of the sample to which the inserted dataset is associated
      * @param type Type of the data
      * @param file File that stores the table presentation of the dataset 
      */
-    public void bulkImport( String schemaName, String taskID, String individualID, String type, File file) {
+    public void bulkImport( String schemaName, String individualID, String type, File file) {
         
-        TaskDAO taskDAO = DAOFactory.getDAOFactory().getTaskDAO();
         DataSetDAO dataSetDAO = DAOFactory.getDAOFactory().getDataSetDAO();
+        ContentDAO contentDAO = DAOFactory.getDAOFactory().getContentDAO();
         DataType dataType = DataTypeManager.getDataType(type);
         String tableName = dataSetDAO.createTableName(individualID.toUpperCase(), dataType );
 
+        
         //If table for this data type has not been already created
-        if ( !taskDAO.hasDataTable(schemaName, taskID, tableName)) {
+        if ( !contentDAO.tableExists(schemaName, tableName)) {
             //Create a new table for this data type.
-            taskDAO.addDataTable(schemaName, taskID, tableName );
             dataSetDAO.createDataTable(schemaName, individualID, dataType );               
         }
         

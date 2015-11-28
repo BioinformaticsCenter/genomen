@@ -9,5 +9,5 @@ import java.util.List;
  */
 public interface Importer {
  
-    public abstract List<Individual> importDataSet( String schemaName, String taskID, String individualID, String[] fileNames ) throws ImporterException;
+    public abstract List<Individual> importDataSet( String schemaName, String individualID, String[] fileNames ) throws ImporterException;
 }

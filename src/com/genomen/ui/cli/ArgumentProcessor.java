@@ -25,15 +25,18 @@ public class ArgumentProcessor {
     private static final String COMMAND_ANALYSES = "-a";
     private static final String VALID_ANALYSES_REG_EXP = "^[\\w\\.]+";    
     private static final String ANALYSES_ARGUMENT_SEPARATOR = ",";    
-    
-    private static final String COMMAND_SAMPLE = "-s";
-    private static final String VALID_SAMPLE_REG_EXP = "^\\w+";
-    
+      
     private static final String COMMAND_FILE = "-i";
     private static final String VALID_FILE_REG_EXP = "^[A-Za-z0-9_/\\.]+(:[A-Za-z0-9_/\\.]+)*,\\w+(,\\w+)";
     private static final String DATASET_SEPARATOR = ";";
     private static final String DATASET_FILE = ":";    
     private static final String DATASET_ARGUMENT_SEPARATOR = ",";
+    
+    private static final String COMMAND_IMPORT_SAMPLE = "-s";
+    private static final String VALID_SAMPLE_REG_EXP = "^[A-Za-z0-9_/\\.]+(,[A-Za-z0-9_/\\.]+)*";
+    private static final String SAMPLE_SEPARATOR = ",";    
+    
+    private static final String COMMAND_REMOVE_SAMPLE = "-remove";     
 
     private static final String COMMAND_LANGUAGE = "-l";
     private static final String VALID_LANGUAGE_REG_EXP = "^\\w+";
@@ -41,9 +44,9 @@ public class ArgumentProcessor {
     private static final String COMMAND_HELP = "-help";
     private static final String COMMAND_DESTROY_DATABASE = "-destroy-database";
     
-    private static final String COMMAND_IMPORT_DATABASE = "-import";
-    private static final String VALID_IMPORT_DATABASE_REGEXP = "^[A-Za-z0-9_/\\.]*\\.xml"
-            ;
+    private static final String COMMAND_IMPORT_DATABASE = "-import-db";
+    private static final String VALID_IMPORT_DATABASE_REGEXP = "^[A-Za-z0-9_/\\.]*\\.xml";
+             
     private static final String COMMAND_EXPORT_DATABASE = "-export";
     private static final String VALID_EXPORT_DATABASE_REGEXP = "^[A-Za-z0-9_/\\.]*";
     
@@ -52,6 +55,10 @@ public class ArgumentProcessor {
   
     private static final String COMMAND_CREATE_DATABASE = "-create-database";
     private static final String VALID_CREATE_DATABASE_REGEXP = "^[A-Za-z0-9_/\\.]*";    
+    
+    private static final String COMMAND_PERSIST_DATASETS = "-persist";
+    
+    private static final String COMMAND_LIST_DATASETS = "-list";    
     
     private static final String ERROR_MESSAGE = "Invalid command syntax";
 
@@ -68,12 +75,21 @@ public class ArgumentProcessor {
         List<String> requiredFormats = parseFormats(args);        
         String language = parseLanguage(args);
         List<DataSet> dataSets = parseDataSets(args);
-
-        AnalysisRequest analysisRequest = null;
-        analysisRequest = new AnalysisRequest( dataSets, requiredAnalyses, language, requiredFormats  );
-        analysisRequest.setName(outputName);
+        List<String> requiredSamples = parseRequiredSamples(args);
         
-
+        //If output file is specified but no alayses are listed, perform all analyses.
+        if ( outputName != null && requiredAnalyses.isEmpty()) {         
+            requiredAnalyses=  Logics.getInstance().getAnalyzationLogics();
+        }
+        
+        AnalysisRequest analysisRequest = null;
+        analysisRequest = new AnalysisRequest( dataSets, requiredAnalyses, requiredSamples,language, requiredFormats  );
+        analysisRequest.setName(outputName);   
+        
+        if ( datasetPersistenceRequired(args) ) {
+            analysisRequest.setPersistDatasets(true);
+        }        
+        
         return analysisRequest;
     }
 
@@ -82,7 +98,7 @@ public class ArgumentProcessor {
         return findParameter( COMMAND_OUTPUT, VALID_OUTPUT_REG_EXP, args );
     }
 
-    private static List<DataSet> parseDataSets( String[] args ) throws InvalidCLIArgumentException {
+    protected static List<DataSet> parseDataSets( String[] args ) throws InvalidCLIArgumentException {
 
         List<DataSet> dataSetList = new LinkedList<DataSet>();
 
@@ -107,7 +123,7 @@ public class ArgumentProcessor {
         
         return dataSetList;
 
-    }
+    }       
     
     private static List<String> parseFormats( String[] args) throws InvalidCLIArgumentException {
         List<String> formats = new ArrayList<String>();
@@ -135,11 +151,11 @@ public class ArgumentProcessor {
     
     private static List<String> parseRequiredAnalyses(  String[] args ) throws InvalidCLIArgumentException {
         List<String> analyses = new ArrayList<String>();
-        int parameterIndex = findParameterIndex(COMMAND_ANALYSES,args);
+        int parameterIndex = findParameterIndex(COMMAND_ANALYSES,args);  
         
-        if ( parameterIndex >= args.length || parameterIndex < 0 ) {
-            return Logics.getInstance().getAnalyzationLogics();
-        }        
+        if ( parameterIndex < 0 ) {
+            return analyses;
+        }
         
         String parameters = args[parameterIndex];
         
@@ -154,6 +170,28 @@ public class ArgumentProcessor {
         }        
         return analyses;   
     }
+    
+    protected static List<String> parseRequiredSamples(  String[] args ) throws InvalidCLIArgumentException {
+        List<String> samples = new ArrayList<String>();
+        int parameterIndex = findParameterIndex(COMMAND_IMPORT_SAMPLE,args);  
+        
+        if ( parameterIndex < 0 ) {
+            return samples;
+        }
+        
+        String parameters = args[parameterIndex];
+        
+        String[] requestedSamples = parameters.split(SAMPLE_SEPARATOR);
+  
+        for ( int sampleIndex = 0; sampleIndex < requestedSamples.length; sampleIndex++) {
+            
+            if ( requestedSamples[sampleIndex].matches(VALID_SAMPLE_REG_EXP)) {
+                     
+                samples.add(requestedSamples[sampleIndex]);    
+            }        
+        }        
+        return samples;   
+    }    
     
     
     private static DataSet createDataSet( String parameterSet ) {
@@ -186,7 +224,7 @@ public class ArgumentProcessor {
      * @return  imported database file name
      * @throws InvalidCLIArgumentException
      */
-    public static String getImportedFile( String[] args ) throws InvalidCLIArgumentException {
+    public static String getImportedDbFile( String[] args ) throws InvalidCLIArgumentException {
         return findParameter( COMMAND_IMPORT_DATABASE, VALID_IMPORT_DATABASE_REGEXP, args );
     }
     
@@ -224,7 +262,7 @@ public class ArgumentProcessor {
 
         int parameterIndex = findParameterIndex( command, parameters );
         if ( !validArgument( parameters, parameterIndex, parameterRegExp )) {
-            throw new InvalidCLIArgumentException(ERROR_MESSAGE);
+            return null;
         }
         
         return parameters[parameterIndex];
@@ -298,6 +336,20 @@ public class ArgumentProcessor {
     } 
     
     /**
+     * Is sample dataset import without further analysis required in the given arguments?
+     * @param args CL arguments.
+     * @return <code>true</code> if only import is requested, <code>false</code> otherwise.
+     * @throws InvalidCLIArgumentException
+     */
+    public static boolean datasetImportRequired( String[] args) throws InvalidCLIArgumentException {
+
+        if (findParameterIndex(COMMAND_FILE, args ) >=  0 && !taskRequired(args)) {
+            return true;
+        }
+        return false;
+    }     
+    
+    /**
      * Is the database requested to be exported in the given arguments.
      * @param args CL arguments.
      * @return <code>true</code> if the database is to be exported, <code>false</code> otherwise.
@@ -336,12 +388,48 @@ public class ArgumentProcessor {
     }    
     
     /**
-     * Is an analysis requested to be performed in the given arguments.
+     * Is the persistence of the task related datasets requested in the given arguments. 
      * @param args CL arguments
-     * @return <code>true</code> if an analysis is to be performed, false otherwise.
+     * @return <code>true</code> if the persistence of the datasets is required, <code>false</code> otherwise.
+     */
+    public static boolean datasetPersistenceRequired( String[] args ) {
+        if (findParameterIndex(COMMAND_PERSIST_DATASETS, args ) >=  0) {
+            return true;
+        }
+        return false;   
+    }   
+    
+    /**
+     * Is listing of the stored datasets required
+     * @param args CL arguments
+     * @return <code>true</code> if listing of the datasets is required, <code>false</code> otherwise.
+     */
+    public static boolean datasetListingRequired( String[] args ) {
+        if (findParameterIndex(COMMAND_LIST_DATASETS, args ) >=  0) {
+            return true;
+        }
+        return false;   
+    }   
+    
+    /**
+     * Is removal of one or more samples required.
+     * @param args CL arguments
+     * @return <code>true</code> if removal of samples is required, <code>false</code> otherwise.
+     */
+    public static boolean sampleRemovalRequired( String[] args ) {
+        if (findParameterIndex(COMMAND_REMOVE_SAMPLE, args ) >=  0) {
+            return true;
+        }
+        return false;   
+    }      
+    
+    /**
+     * Is a task requested to be performed in the given arguments.
+     * @param args CL arguments
+     * @return <code>true</code> if a task is to be performed, false otherwise.
      * @throws InvalidCLIArgumentException
      */
-    public static boolean analysisRequired( String[] args) throws InvalidCLIArgumentException {
+    public static boolean taskRequired( String[] args) throws InvalidCLIArgumentException {
 
         boolean outputDefined = false;
         boolean fileDefined = false;
@@ -356,15 +444,12 @@ public class ArgumentProcessor {
             }            
 
         }
-        if ( outputDefined && fileDefined) {
+        //If output and input are defined, an analysis is to be peformed.
+        if ( outputDefined ) {
             return true;
         }
-        else if (  !outputDefined && !fileDefined ) {
-            return false;
-        }
-        else {
-            throw new InvalidCLIArgumentException(ERROR_MESSAGE);
-        }
+        return false;
     }    
+           
     
 }

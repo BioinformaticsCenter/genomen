@@ -1,7 +1,6 @@
 package com.genomen.core;
 
 import com.genomen.reporter.Report;
-import com.genomen.reporter.ReportFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Observable;
@@ -15,6 +14,8 @@ public class AnalysisRequest extends Observable {
 
     private TaskState state = TaskState.INITIALIZED;
     
+    private boolean persistDatasets = false;
+    
     private ArrayList<Report> reports = new ArrayList<Report>();
 
     //List containing the class names of the required analyses.
@@ -25,6 +26,10 @@ public class AnalysisRequest extends Observable {
     
     //Paths of files to containing data to be analyzed.
     private ArrayList<DataSet> datasets = new ArrayList<DataSet>();
+    
+    //Identifiers for the samples that are to be analysed
+    private ArrayList<String> samples = new ArrayList<String>();
+    
     //Required name of the report
     private String name = "";
     //Required language of the report.
@@ -33,6 +38,7 @@ public class AnalysisRequest extends Observable {
     private boolean finished = false;
     //Is the analysis cancelled
     private boolean cancel = false;
+    
     /**The list of errors that occured during the analysis. The list contains errors related
     *to all analyses requested in a general level. Errors occured during the analysis that do not
     *terminate the analysis are listed within reports produced by analyses
@@ -126,6 +132,7 @@ public class AnalysisRequest extends Observable {
     public List<DataSet> getDataSets() {
         return datasets;
     }
+   
     
     /**
      * Adds a dataset to this request
@@ -170,14 +177,16 @@ public class AnalysisRequest extends Observable {
      * Constructs an analysis request from given datasets, analyses and language report language id.
      * @param p_datasets the datasets used in this analysis
      * @param p_requiredAnalyses the analyses to be performed
+     * @param samples IDs of samples that are to be analysed
      * @param p_language the language used in the report
      * @param p_formats a list of report formats requested.
      */
-    public AnalysisRequest( List<DataSet> p_datasets, List<String> p_requiredAnalyses, String p_language, List<String> p_formats ) {
-        datasets.addAll(p_datasets);
-        requiredAnalyses.addAll(p_requiredAnalyses);
-        requiredFormats.addAll(p_formats);
-        language = p_language;
+    public AnalysisRequest( List<DataSet> p_datasets, List<String> p_requiredAnalyses, List<String> samples, String p_language, List<String> p_formats ) {
+        this.datasets.addAll(p_datasets);
+        this.requiredAnalyses.addAll(p_requiredAnalyses);
+        this.requiredFormats.addAll(p_formats);
+        this.samples.addAll(samples);
+        this.language = p_language;
     }
 
     /**
@@ -246,5 +255,25 @@ public class AnalysisRequest extends Observable {
         return state;
     }
 
+    /**Will imported datasets be left to the database after analysis.
+     * @return <code>true</code> if the datasets are to remain in the database, <code>false</code> otherwise.
+     */
+    public boolean isPersistDatasets() {
+        return persistDatasets;
+    }
+
+    /**Sets the task to persist the imported datasets
+     * @param persistDatasets Are datasets allowed to remain in the database after analysis.
+     */
+    public void setPersistDatasets(boolean persistDatasets) {
+        this.persistDatasets = persistDatasets;
+    }
+
+    /**Gets the IDs of the samples that are to be analysed.
+     * @return the sample IDs
+     */
+    public ArrayList<String> getSamples() {
+        return samples;
+    }
 
 }

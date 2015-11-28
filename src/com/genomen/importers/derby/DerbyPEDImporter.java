@@ -34,7 +34,7 @@ public class DerbyPEDImporter extends DerbySNPImporter implements Importer {
     private static final String MAP_ENDING = "map";    
     private static final String TEMP_FILE_NAME = "ped.tmp";
     
-    public List<Individual> importDataSet( String schemaName, String tableName, String individualID, String[] fileNames ) {
+    public List<Individual> importDataSet( String schemaName, String individualID, String[] fileNames ) {
 
         List<Individual> individualList = new LinkedList<Individual>();
 
@@ -64,7 +64,7 @@ public class DerbyPEDImporter extends DerbySNPImporter implements Importer {
                 Individual individual = parseIndividual(PEDTokenizer);
                 individualList.add(individual);
 
-                importSNPs( PEDTokenizer, MAPFile, individual, schemaName, tableName );
+                importSNPs( PEDTokenizer, MAPFile, individual, schemaName );
 
                 long deltaTime = (System.currentTimeMillis() - beforeTime ) / 1000;
                 System.out.println(individual.getId() + " " + deltaTime + "s" );
@@ -118,7 +118,7 @@ public class DerbyPEDImporter extends DerbySNPImporter implements Importer {
         return new Individual(individualID, familyID);
     }
 
-    private void importSNPs( StreamTokenizer PEDTokenizer, File MAPFile, Individual individual, String schemaName, String tableName ) throws ImporterException {
+    private void importSNPs( StreamTokenizer PEDTokenizer, File MAPFile, Individual individual, String schemaName  ) throws ImporterException {
 
         BufferedReader MAPReader = null;
         BufferedWriter bufferedWriter = null;
@@ -167,7 +167,7 @@ public class DerbyPEDImporter extends DerbySNPImporter implements Importer {
                 }
             }
             ResourceReleaser.close(bufferedWriter);
-            this.bulkImport(schemaName, tableName, individual.getId(), DerbySNPImporter.VARIANT, temp);
+            this.bulkImport(schemaName, individual.getId(), DerbySNPImporter.VARIANT, temp);
             temp.delete();
         }
         catch (FileNotFoundException ex) {

@@ -7,6 +7,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import org.apache.log4j.Logger;
 
@@ -16,6 +17,7 @@ import org.apache.log4j.Logger;
  */
 public class DerbyTaskDAO extends DerbyDAO implements TaskDAO {
 
+    @Override
     public boolean addTask( String schemaName, String taskID) {
 
         boolean success = true;
@@ -48,6 +50,7 @@ public class DerbyTaskDAO extends DerbyDAO implements TaskDAO {
         return success;
     }
 
+    @Override
     public boolean changeTaskState( String schemaName, String taskID, TaskState taskState ) {
         
         boolean success = true;
@@ -81,6 +84,7 @@ public class DerbyTaskDAO extends DerbyDAO implements TaskDAO {
     }
     
     
+    @Override
     public boolean deleteTask( String schemaName, String taskID ) {
         boolean success = true;
         Connection connection = null;
@@ -110,7 +114,8 @@ public class DerbyTaskDAO extends DerbyDAO implements TaskDAO {
         return success;        
     }
     
-    public boolean deleteTaskTables( String schemaName, String taskID ) {
+    @Override
+    public boolean deleteTaskIndividuals( String schemaName, String individualID ) {
         boolean success = true;
         Connection connection = null;
 
@@ -123,8 +128,8 @@ public class DerbyTaskDAO extends DerbyDAO implements TaskDAO {
         }
 
         try {
-            PreparedStatement statement = connection.prepareStatement("DELETE FROM " + schemaName + ".Task_table WHERE TASK_ID = ?");
-            statement.setString(1, taskID);
+            PreparedStatement statement = connection.prepareStatement("DELETE FROM " + schemaName + ".Task_Individuals WHERE TASK_ID = ?");
+            statement.setString(1, individualID);
             statement.executeUpdate();
             statement.close();
 
@@ -139,12 +144,13 @@ public class DerbyTaskDAO extends DerbyDAO implements TaskDAO {
         return success;        
     }    
 
+    @Override
     public boolean deleteAllTaskData( String schemaName, String taskID ) {
         
         boolean success = true;
         
         dropAllTaskTables(schemaName, taskID);
-        deleteTaskTables(schemaName, taskID);    
+        deleteTaskIndividuals(schemaName, taskID);    
         deleteTask(schemaName, taskID);   
         
         return success;
@@ -166,18 +172,18 @@ public class DerbyTaskDAO extends DerbyDAO implements TaskDAO {
 
 
         try {
-            PreparedStatement statement = connection.prepareStatement("SELECT TABLE_NAME FROM " + schemaName + ".Task_table WHERE TASK_ID = ?" );
+            PreparedStatement statement = connection.prepareStatement("SELECT INDIVIDUAL_ID FROM " + schemaName + ".Task_Individuals WHERE TASK_ID = ?" );
             statement.setString(1, taskID);
             ResultSet resultSet = statement.executeQuery();
 
-            ContentDAO contentDAO = DAOFactory.getDAOFactory().getContentDAO();
+            DataSetDAO datasetDAO = DAOFactory.getDAOFactory().getDataSetDAO();
 
+            List<String> individuals = new ArrayList<String>();
+            
             while ( resultSet.next() ) {
-
-                String tableName = resultSet.getString("TABLE_NAME");
-                contentDAO.dropTable(Configuration.getConfiguration().getDatabaseTempSchemaName(), tableName);
+                individuals.add( resultSet.getString("INDIVIDUAL_ID"));
             }
-
+            datasetDAO.removeIndividuals(individuals);
 
             statement.close();
 
@@ -193,7 +199,7 @@ public class DerbyTaskDAO extends DerbyDAO implements TaskDAO {
         return success;
     }
 
-    public boolean hasDataTable( String schemaName, String taskID, String tableName ) {
+    public boolean hasIndividual( String schemaName, String taskID, String tableName ) {
 
         boolean hasTable = false;
      
@@ -209,7 +215,7 @@ public class DerbyTaskDAO extends DerbyDAO implements TaskDAO {
 
 
         try {
-            PreparedStatement statement = connection.prepareStatement("SELECT COUNT(*) AS rowcount FROM " + schemaName + ".Task_table WHERE TASK_ID = ? AND TABLE_NAME = ?" );
+            PreparedStatement statement = connection.prepareStatement("SELECT COUNT(*) AS rowcount FROM " + schemaName + ".Task_Individuals WHERE TASK_ID = ? AND INDIVIDUAL_ID = ?" );
             statement.setString(1, taskID);
             statement.setString(2, tableName);            
             ResultSet resultSet = statement.executeQuery();
@@ -238,7 +244,7 @@ public class DerbyTaskDAO extends DerbyDAO implements TaskDAO {
         
     }
 
-    public void addDataTable( String schemaName, String taskID, String tableName ) {
+    public void addIndividual( String schemaName, String taskID, String individualID ) {
 
         Connection connection = null;
 
@@ -251,9 +257,9 @@ public class DerbyTaskDAO extends DerbyDAO implements TaskDAO {
         }
 
         try {
-            PreparedStatement statement = connection.prepareStatement("INSERT INTO " + schemaName + ".Task_table VALUES (?,?)");
+            PreparedStatement statement = connection.prepareStatement("INSERT INTO " + schemaName + ".Task_Individuals VALUES (?,?)");
             statement.setString(1, taskID);
-            statement.setString(2, tableName );
+            statement.setString(2, individualID );
             statement.executeUpdate();
             statement.close();
 

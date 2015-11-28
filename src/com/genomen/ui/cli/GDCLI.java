@@ -4,7 +4,14 @@ import com.genomen.core.AnalysisExecutor;
 import com.genomen.utils.database.SchemaTruncator;
 import com.genomen.core.AnalysisRequest;
 import com.genomen.core.Configuration;
+import com.genomen.core.DataSet;
+import com.genomen.core.Individual;
 import com.genomen.core.TaskState;
+import com.genomen.dao.DAOFactory;
+import com.genomen.dao.DataSetDAO;
+import com.genomen.importers.Importer;
+import com.genomen.importers.ImporterException;
+import com.genomen.importers.ImporterFactory;
 import com.genomen.reporter.CSVReportCreator;
 import com.genomen.reporter.ReportFormat;
 import com.genomen.reporter.XMLReportCreator;
@@ -19,6 +26,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -47,13 +55,13 @@ public class GDCLI implements Observer {
                 return;
             }
             cli.performMaintainance(args);  
-            if ( ArgumentProcessor.analysisRequired(args)) {
+            if ( ArgumentProcessor.taskRequired(args)) {
                 cli.initializeAnalysis(args);     
             }
-            
+        
         }
         catch (InvalidCLIArgumentException ex) {
-
+            System.out.print(ex);
             cli.printHelp();
 
         }    
@@ -71,11 +79,15 @@ public class GDCLI implements Observer {
             System.out.println("Creating database...");
             DatabaseRecreator.recreateDatabase(args[1]);
             System.out.println("Database created!");              
+        }    
+        if ( ArgumentProcessor.datasetImportRequired(args)) {
+            importDatasets(args);
         }        
         if ( ArgumentProcessor.databaseImportRequired(args)) {
             XMLImporter importer = new XMLImporter();
             System.out.println("Importing database...");            
-            importer.importToDatabase(ArgumentProcessor.getImportedFile(args), Configuration.getConfiguration().getDatabaseSchemaName()); 
+            importer.importToDatabase(ArgumentProcessor.getImportedDbFile(args), Configuration.getConfiguration().getDatabaseSchemaName()); 
+            System.out.println("Database imported!");   
         }
         if ( ArgumentProcessor.databaseExportRequired(args)) {
             System.out.println("Exporting database...");
@@ -87,6 +99,14 @@ public class GDCLI implements Observer {
             XMLTemplateCreator.createXMLTemplate(Configuration.getConfiguration().getDatabaseSchemaName(), ArgumentProcessor.getTemplateFile(args));  
             System.out.println("Template created!");              
         }
+        if ( ArgumentProcessor.datasetListingRequired(args)) {
+            listDatasets(); 
+        } 
+        if ( ArgumentProcessor.sampleRemovalRequired(args)) {
+            removeSamples(args);
+        }
+        
+        
   
     }
     
@@ -184,5 +204,57 @@ public class GDCLI implements Observer {
 
 
     }
+    
+    private void importDatasets(String[] args) throws InvalidCLIArgumentException {
+        System.out.println("Importing dataset...");      
+        List<DataSet> datasets = ArgumentProcessor.parseDataSets(args);
+        for ( int i = 0; i < datasets.size(); i++ ) {
+            Importer dataSetImporter = ImporterFactory.getDatasetImporterFactory().getImporter(datasets.get(i).getFormat());
 
+            if ( dataSetImporter == null ) {
+                continue;
+            }
+
+            try {
+                dataSetImporter.importDataSet( Configuration.getConfiguration().getDatabaseTempSchemaName(), datasets.get(i).getName(), datasets.get(i).getFiles());
+            } catch (ImporterException ex) {          
+                System.out.println(ex);
+            }
+
+        }
+        System.out.println("Importing completed.");  
+    }
+    
+    private void listDatasets() {
+        
+        DataSetDAO datasetDAO = DAOFactory.getDAOFactory().getDataSetDAO();
+        List<Individual> individuals = datasetDAO.getIndividuals();
+        
+        if ( individuals.isEmpty() ) {
+            System.out.println("No datasets imported");
+        }
+        else {
+            System.out.println("Listing currently stored datasets:");  
+            for ( Individual individual : individuals ) {
+                System.out.print( individual.getId() + "\t");
+                List<String> dataTypes = datasetDAO.getDataTypes(individual.getId());
+                for ( String type: dataTypes) {
+                    System.out.print(type+"\t");
+                }
+                System.out.print("\n");
+            }
+            System.out.println("Total: " + individuals.size() + " samples");
+        }    
+    }
+    
+    private void removeSamples( String[] args ) throws InvalidCLIArgumentException {
+        
+        DataSetDAO datasetDAO = DAOFactory.getDAOFactory().getDataSetDAO();
+        System.out.println("Removing samples...");      
+        List<String> samples = ArgumentProcessor.parseRequiredSamples(args);
+        datasetDAO.removeIndividuals(samples);
+        System.out.println("Samples removed.");          
+    }
+    
+    
 }

@@ -43,8 +43,29 @@ public interface DataSetDAO {
      * Removes the listed individuals from the database.
      * @param individuals A list of individuals to be removed
      */
-    public abstract void removeIndividuals( List<Individual> individuals );
+    public abstract void removeIndividuals( List<String> individuals );
     
+    /**
+     * Retrieves an individual with the given id from the database.
+     * @param id ID of an individual
+     * @return instance of <code>Individual</code> or <code>null</code> if no matching individual is found.
+     */
+    public abstract Individual getIndividual( String id);  
+    
+    /**
+     * Lists currently stored individuals
+     * @return
+     */
+    public abstract List<Individual> getIndividuals();
+    
+    /**
+     * Lists the datatypes currently associated with a certain sample.
+     * @param sampleID id of a sample
+     * @return a list of samp,e ids
+     */
+    public abstract List<String> getDataTypes( String sampleID );
+    
+
     /**
      * Gets the current valid ID number that can be used to insert a new value to the table.
      * @param schemaName Schema used to store the table.

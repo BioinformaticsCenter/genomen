@@ -39,7 +39,7 @@ public interface TaskDAO {
      * @param taskID task id
      * @return <code>true</code> if the entries were deleted, <code>false</code> otherwise
      */
-    public abstract boolean deleteTaskTables( String schema, String taskID ); 
+    public abstract boolean deleteTaskIndividuals( String schema, String taskID ); 
     
     /**
      * Removes all task related data from the database and drops temporary tables.
@@ -50,21 +50,21 @@ public interface TaskDAO {
     public abstract boolean deleteAllTaskData( String schema, String taskID );
     
     /**
-     * Checks if a task is associated with the given table.
+     * Checks if a task is associated with the given individual.
      * @param schema schema name
      * @param taskID task id
-     * @param tableName table name
+     * @param individualId individual id
      * @return <code>true</code> if table-task association exists, <code>false</code> otherwise
      */
-    public abstract boolean hasDataTable( String schema, String taskID, String tableName ); 
+    public abstract boolean hasIndividual( String schema, String taskID, String individualId ); 
     
     /**
-     * Associates a table presenting dataset with a task.
+     * Associates an individual with a task.
      * @param schema schema name
      * @param taskID task id
-     * @param tableName dataset table name
+     * @param individualId individual id
      */
-    public abstract void addDataTable( String schema, String taskID, String tableName );
+    public abstract void addIndividual( String schema, String taskID, String individualId );
     
     /**
      * Checks if the given task exists currently in the database.

@@ -40,7 +40,7 @@ public class DerbyVCFImporter extends DerbySNPImporter implements Importer{
     private VCFReader vcfReader;
     
     @Override
-    public List<Individual> importDataSet(String schemaName, String taskID, String individualID, String[] fileNames) throws ImporterException {
+    public List<Individual> importDataSet(String schemaName, String individualID, String[] fileNames) throws ImporterException {
 
         List<Individual> individualList = new LinkedList<Individual>();        
         
@@ -65,8 +65,8 @@ public class DerbyVCFImporter extends DerbySNPImporter implements Importer{
         List<File> tempVariantInfoFiles = new ArrayList<File>();  
         
         for ( String id: sampleIDs) {
-            tempVariantFiles.add( new File( Configuration.getConfiguration().getTmpFolderPath() + taskID.concat(id).concat(TEMP_VARIANT_FILE_NAME)));
-            tempVariantInfoFiles.add( new File( Configuration.getConfiguration().getTmpFolderPath() + taskID.concat(id).concat(TEMP_VARIANT_INDO_FILE_NAME)));
+            tempVariantFiles.add( new File( Configuration.getConfiguration().getTmpFolderPath() + id.concat(TEMP_VARIANT_FILE_NAME)));
+            tempVariantInfoFiles.add( new File( Configuration.getConfiguration().getTmpFolderPath() + id.concat(TEMP_VARIANT_INDO_FILE_NAME)));
         }
           
         //Find valid indexes for all tables
@@ -114,11 +114,11 @@ public class DerbyVCFImporter extends DerbySNPImporter implements Importer{
             }    
             //Import all tmp files and delete files after import
             for ( int i = 0; i < tempVariantFiles.size(); i++) {
-                this.bulkImport(schemaName, taskID, sampleIDs.get(i), DerbySNPImporter.VARIANT, tempVariantFiles.get(i));
+                this.bulkImport(schemaName, sampleIDs.get(i), DerbySNPImporter.VARIANT, tempVariantFiles.get(i));
                 tempVariantFiles.get(i).delete();
             }
             for ( int i = 0; i < tempVariantInfoFiles.size(); i++ ) {
-                this.bulkImport(schemaName, taskID, sampleIDs.get(i), DerbySNPImporter.VARIANT_INFO, tempVariantInfoFiles.get(i));
+                this.bulkImport(schemaName, sampleIDs.get(i), DerbySNPImporter.VARIANT_INFO, tempVariantInfoFiles.get(i));
                 tempVariantInfoFiles.get(i).delete();
             }
 

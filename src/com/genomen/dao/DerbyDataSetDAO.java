@@ -11,6 +11,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import org.apache.log4j.Logger;
@@ -59,6 +60,7 @@ public class DerbyDataSetDAO extends DerbyDAO implements DataSetDAO {
 
     }
     
+    @Override
     public String createTableName( String taskID, DataType dataType ) {
         
         return dataType.getId().concat("_").concat(taskID);
@@ -148,7 +150,8 @@ public class DerbyDataSetDAO extends DerbyDAO implements DataSetDAO {
 
     }
     
-    public void removeIndividuals( List<Individual> individuals ) {
+    @Override
+    public void removeIndividuals( List<String> individualIDs ) {
         
         Connection connection = null;
      
@@ -159,12 +162,16 @@ public class DerbyDataSetDAO extends DerbyDAO implements DataSetDAO {
             Logger.getLogger( DerbyContentDAO.class ).debug(ex);
             return;
         }
-
+        
+        for ( String individual : individualIDs ) {
+            dropAllIndividualTables( Configuration.getConfiguration().getDatabaseTempSchemaName(), individual);
+        }
+        
         try {
             PreparedStatement statement = connection.prepareStatement("DELETE FROM " + Configuration.getConfiguration().getDatabaseTempSchemaName() + ".Individuals WHERE INDIVIDUAL_ID = ?");
             
-            for ( Individual individual : individuals ) {
-                statement.setString( 1, individual.getId() );
+            for ( String individual : individualIDs ) {
+                statement.setString( 1, individual );
                 statement.addBatch();
             }
 
@@ -180,6 +187,60 @@ public class DerbyDataSetDAO extends DerbyDAO implements DataSetDAO {
         }
               
     }
+     
+    private void dropAllIndividualTables( String schemaName, String individualID ) {
+
+        ContentDAO contentDAO = DAOFactory.getDAOFactory().getContentDAO();    
+        String[] tables = contentDAO.getTables(schemaName);
+        
+        for ( String table: tables ) {    
+            if ( table.matches( ".*_" + individualID.toUpperCase() + "$")) {
+                contentDAO.dropTable(Configuration.getConfiguration().getDatabaseTempSchemaName(), table);
+            }   
+        }      
+    }    
+    
+    public Individual getIndividual( String individualID ) {
+        
+        Connection connection = null;
+        Individual individual = null;
+        
+        try {
+            connection = DerbyDAOFactory.createConnection();
+        }
+        catch (Exception ex) {
+            Logger.getLogger( DerbyContentDAO.class ).debug(ex);
+            return null;
+        }
+
+        try {
+            PreparedStatement statement = connection.prepareStatement("SELECT * FROM " + Configuration.getConfiguration().getDatabaseTempSchemaName() + ".Individuals WHERE INDIVIDUAL_ID = ?");
+            statement.setString( 1, individualID );           
+            ResultSet results = statement.executeQuery();
+
+            
+            if ( results.next() ) {
+                    
+                //Currently no data besides ID is stored.
+                String id = results.getString("INDIVIDUAL_ID");
+                individual = new Individual(id); 
+            }
+
+            //Close the connection.
+            results.close();
+            statement.close();
+
+
+        } catch (SQLException ex) {
+            Logger.getLogger( DerbyTraitDAO.class ).debug(ex);
+        }
+        finally {
+            closeConnection( connection );
+        }
+        
+        return individual;
+    }
+    
 
     @Override
     public int getCurrentId(String schemaName, String individualID, DataType dataType) {
@@ -220,6 +281,72 @@ public class DerbyDataSetDAO extends DerbyDAO implements DataSetDAO {
         return currentID;
   
         
+    }
+
+    @Override
+    public List<Individual> getIndividuals() {
+        
+        List<Individual> individualList = new ArrayList<Individual>();
+        
+        Connection connection = null;
+        Individual individual = null;
+        
+        try {
+            connection = DerbyDAOFactory.createConnection();
+        }
+        catch (Exception ex) {
+            Logger.getLogger( DerbyContentDAO.class ).debug(ex);
+            return null;
+        }
+
+        try {
+            PreparedStatement statement = connection.prepareStatement("SELECT INDIVIDUAL_ID FROM " + Configuration.getConfiguration().getDatabaseTempSchemaName() + ".Individuals" );        
+            ResultSet results = statement.executeQuery();
+
+            
+            if ( results.next() ) {
+
+                //Currently no data besides ID is stored.
+                String id = results.getString("INDIVIDUAL_ID");
+                individual = new Individual(id); 
+                individualList.add(individual);
+            }
+
+            //Close the connection.
+            results.close();
+            statement.close();
+
+
+        } catch (SQLException ex) {
+            Logger.getLogger( DerbyTraitDAO.class ).debug(ex);
+        }
+        finally {
+            closeConnection( connection );
+        }
+        
+        return individualList;
+    }
+
+    @Override
+    public List<String> getDataTypes(String sampleID) {
+
+        List<String> dataTypeIDs = new ArrayList<String>();
+        
+        ContentDAO contentDAO = DAOFactory.getDAOFactory().getContentDAO();    
+        String[] tables = contentDAO.getTables( Configuration.getConfiguration().getDatabaseTempSchemaName() );
+        
+        for ( String table: tables ) {    
+            if ( table.matches( ".*_" + sampleID.toUpperCase() + "$")) {
+
+                String[] split = table.split("_");
+                
+                if ( split.length >= 2 ) {
+                    dataTypeIDs.add(split[0]);
+                }
+                
+            }   
+        }    
+       return dataTypeIDs; 
     }
       
 

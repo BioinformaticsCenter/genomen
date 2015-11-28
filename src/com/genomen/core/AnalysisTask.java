@@ -6,6 +6,7 @@ import com.genomen.dao.DAOFactory;
 import com.genomen.dao.DataSetDAO;
 import com.genomen.dao.TaskDAO;
 import com.genomen.entities.DataType;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -66,7 +67,7 @@ public class AnalysisTask {
      */
     public List<Individual> getIndividuals() {
         return new LinkedList<Individual>( individualMap.values());
-    }
+    }   
 
     /**
      * Gets an individual identified with the id given as a parameter
@@ -96,9 +97,14 @@ public class AnalysisTask {
     public void clearData() {
         TaskDAO taskDAO = DAOFactory.getDAOFactory().getTaskDAO();
         taskDAO.deleteAllTaskData( Configuration.getConfiguration().getDatabaseTempSchemaName(),taskID);
+    }
+    
+    public void removeTask() {
         
-        DataSetDAO dataSetDAO = DAOFactory.getDAOFactory().getDataSetDAO();
-        dataSetDAO.removeIndividuals(getIndividuals());
+        TaskDAO taskDAO = DAOFactory.getDAOFactory().getTaskDAO();
+        taskDAO.deleteTaskIndividuals(Configuration.getConfiguration().getDatabaseTempSchemaName(), taskID);
+        taskDAO.deleteTask( Configuration.getConfiguration().getDatabaseTempSchemaName(), taskID);
+    
     }
 
     /**

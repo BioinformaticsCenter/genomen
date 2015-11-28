@@ -28,8 +28,6 @@ public class DatabaseRecreator {
             deleteDatabase();
         }
         
-
-
         String commandFilePath = args;
         
         List<String> commands = getCommands(commandFilePath);
@@ -71,7 +69,7 @@ public class DatabaseRecreator {
 
         }
         catch (SQLException ex) {
-
+            System.out.println(ex);        
         }
         catch (ClassNotFoundException ex) {
             System.out.println(ex);
