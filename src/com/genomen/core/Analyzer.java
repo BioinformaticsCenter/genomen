@@ -12,7 +12,6 @@ import com.genomen.reporter.ReportCreator;
 import com.genomen.utils.RandomStringGenerator;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Consumer;
 import org.apache.log4j.Logger;
 
 

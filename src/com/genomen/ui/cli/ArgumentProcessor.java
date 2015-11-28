@@ -19,8 +19,7 @@ public class ArgumentProcessor {
     private static final String VALID_OUTPUT_REG_EXP = "^\\w+";
 
     private static final String COMMAND_OUTPUT_FORMAT = "-f";
-    private static final String VALID_OUTPUT_FORMAT_REG_EXP = "^\\w+";    
-    private static final String COMMAND_ARGUMENT_SEPARATOR = ",";   
+    private static final String VALID_OUTPUT_FORMAT_REG_EXP = "^\\w+";     
     
     private static final String COMMAND_ANALYSES = "-a";
     private static final String VALID_ANALYSES_REG_EXP = "^[\\w\\.]+";    
@@ -86,9 +85,13 @@ public class ArgumentProcessor {
         analysisRequest = new AnalysisRequest( dataSets, requiredAnalyses, requiredSamples,language, requiredFormats  );
         analysisRequest.setName(outputName);   
         
+        //Skip dataset removal if persistence is required or no input dataset is defined, 
         if ( datasetPersistenceRequired(args) ) {
             analysisRequest.setPersistDatasets(true);
-        }        
+        }     
+        else if (dataSets.isEmpty() ) {
+            analysisRequest.setPersistDatasets(true);
+        }           
         
         return analysisRequest;
     }
