@@ -1,6 +1,6 @@
 package com.genomen.reporter;
 
-import com.genomen.core.Individual;
+import com.genomen.core.Sample;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.PrintStream;
@@ -12,13 +12,13 @@ import org.apache.log4j.Logger;
  */
 public class IndividualEntry extends CompositeReportComponent {
 
-    private Individual individual;
+    private Sample individual;
 
     /**
      * Gets the individual whose results are presented in this entry.
      * @return whose results are presented in this entry
      */
-    public Individual getIndividual() {
+    public Sample getIndividual() {
         return individual;
     }
 
@@ -26,7 +26,7 @@ public class IndividualEntry extends CompositeReportComponent {
      * Creates an entry for the results associated with the individual given as a parameter.
      * @param p_individual individual whose results are presented in this entry
      */
-    public IndividualEntry( Individual p_individual ) {
+    public IndividualEntry( Sample p_individual ) {
         individual = p_individual;
     }
 

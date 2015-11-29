@@ -19,20 +19,20 @@ public class AnalysisTask {
 
     private String taskID;
 
-    private HashMap<String, Individual> individualMap = new HashMap<String, Individual>();
+    private HashMap<String, Sample> sampleMap = new HashMap<String, Sample>();
 
     //Two maps used to map the results of the analysis.
     private HashMap<String, HashMap<String, Results>> individualResultsMap = new HashMap<String, HashMap<String, Results>>();
     private HashMap<String, Results> resultsMap = new HashMap<String, Results>();
 
     /**
-     * Adds a group on individuals into this task.
-     * @param p_individuals list of individuals
+     * Adds samples to this task.
+     * @param samples list of individuals
      */
-    public void addIndividuals( List<Individual> p_individuals) {
+    public void addSamples( List<Sample> samples) {
 
-        for ( int i = 0; i < p_individuals.size(); i++ ) {
-            individualMap.put( p_individuals.get(i).getId(), p_individuals.get(i ));
+        for ( int i = 0; i < samples.size(); i++ ) {
+            sampleMap.put( samples.get(i).getId(), samples.get(i ));
         }
 
     }
@@ -54,28 +54,28 @@ public class AnalysisTask {
     }
 
     /**
-     * Adds a single individual into this task.
-     * @param p_individual individual
+     * Adds a single sample to this task.
+     * @param sample a sample
      */
-    public void addIndividual( Individual p_individual ) {
-        individualMap.put(p_individual.getId(), p_individual);
+    public void addIndividual( Sample sample ) {
+        sampleMap.put(sample.getId(), sample);
     }
 
     /**
-     * Gets all individuals associated with this task.
+     * Gets all the samples associated with this task.
      * @return list of individuals associated with this task
      */
-    public List<Individual> getIndividuals() {
-        return new LinkedList<Individual>( individualMap.values());
+    public List<Sample> getSamples() {
+        return new LinkedList<Sample>( sampleMap.values());
     }   
 
     /**
-     * Gets an individual identified with the id given as a parameter
-     * @param id id of the individual
-     * @return an individual identified by the given id
+     * Gets a sample identified with the id given as a parameter
+     * @param id id of the sample
+     * @return a sample identified by the given id
      */
-    public Individual getIndividual( String id ) {
-        return individualMap.get(id);
+    public Sample getIndividual( String id ) {
+        return sampleMap.get(id);
     }
 
     /**
@@ -148,7 +148,7 @@ public class AnalysisTask {
      */
     public Results getResults( String individualId, String logicId ) {
 
-        if ( !individualMap.containsKey( individualId ) || !individualResultsMap.get( individualId ).containsKey(logicId) ) {
+        if ( !sampleMap.containsKey( individualId ) || !individualResultsMap.get( individualId ).containsKey(logicId) ) {
             return new Results(logicId, false);
         }
 

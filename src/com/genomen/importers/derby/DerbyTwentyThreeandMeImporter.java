@@ -2,7 +2,7 @@ package com.genomen.importers.derby;
 
 import com.genomen.core.Configuration;
 import com.genomen.importers.derby.DerbySNPImporter;
-import com.genomen.core.Individual;
+import com.genomen.core.Sample;
 import com.genomen.entities.DataEntityAttributeValue;
 import com.genomen.importers.Importer;
 import com.genomen.importers.ImporterException;
@@ -34,9 +34,9 @@ public class DerbyTwentyThreeandMeImporter extends DerbySNPImporter implements I
 
 
     @Override
-    public List<Individual> importDataSet( String schemaName, String individualID, String[] fileNames ) throws ImporterException {
+    public List<Sample> importDataSet( String schemaName, String individualID, String[] fileNames ) throws ImporterException {
 
-        List<Individual> individualList = new LinkedList<Individual>();        
+        List<Sample> individualList = new LinkedList<Sample>();        
         
         if ( fileNames.length != 1 ) {
             return individualList;
@@ -47,7 +47,7 @@ public class DerbyTwentyThreeandMeImporter extends DerbySNPImporter implements I
 
 
         //Create Individual for the data presented in the file
-        Individual individual = new Individual(individualID);  
+        Sample individual = new Sample(individualID);  
         individualList.add(individual);
         
         //Add individual to database

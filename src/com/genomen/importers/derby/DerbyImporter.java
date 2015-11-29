@@ -15,6 +15,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import org.apache.log4j.Logger;
@@ -111,6 +112,8 @@ public abstract class DerbyImporter extends DerbyDAO {
         catch (SQLException ex) {
             Logger.getLogger(DerbyImporter.class ).debug(ex);          
         }
+        
+        createIndexes(schemaName, individualID, dataType);
 
     }
     
@@ -171,4 +174,48 @@ public abstract class DerbyImporter extends DerbyDAO {
         return datasetDAO.getCurrentId(Configuration.getConfiguration().getDatabaseTempSchemaName(), individualID.toUpperCase(), dataType);
     }
 
+    protected void createIndexes( String schemaName, String sampleID, DataType dataType) {
+        
+        String tableName = DAOFactory.getDAOFactory().getDataSetDAO().createTableName(sampleID, dataType);
+        
+        List<String> indexAttributes = new ArrayList<String>();
+        
+        for ( int i = 0; i < dataType.getAttributeNames().size(); i++) {
+            if ( dataType.isRequiredAttribute(dataType.getAttributeNames().get(i) ) ) {
+                indexAttributes.add(dataType.getAttributeNames().get(i));                
+            }
+        }      
+        
+        String indexStatement = "";
+        
+        for ( int i = 0; i < indexAttributes.size(); i++) {
+            indexStatement = indexStatement + indexAttributes.get(i);
+            
+            if ( i != indexAttributes.size()-1) {
+                indexStatement = indexStatement + ", ";
+            }
+            
+        }     
+        
+        Connection connection = null;
+        try {
+            connection = DerbyDAOFactory.createConnection();
+        }
+        catch (Exception ex) {
+            Logger.getLogger(DerbyImporter.class ).debug(ex);           
+            return;
+        }
+
+        try {           
+            Statement statement = connection.createStatement();
+            statement.executeUpdate("CREATE INDEX " + dataType.getId() + "_index ON " + schemaName + "." + tableName + " ( " + indexStatement + " )" );
+            statement.close();
+            connection.close();
+        }
+        catch (SQLException ex) {
+            Logger.getLogger(DerbyImporter.class ).debug(ex);          
+        }        
+        
+    }
+    
 }

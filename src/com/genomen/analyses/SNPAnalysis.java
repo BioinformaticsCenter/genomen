@@ -2,7 +2,7 @@ package com.genomen.analyses;
 
 import com.genomen.core.AnalysisTask;
 import com.genomen.core.AnalyzationLogic;
-import com.genomen.core.Individual;
+import com.genomen.core.Sample;
 import com.genomen.core.Results;
 import com.genomen.core.Rule;
 import com.genomen.core.SNPResultEntity;
@@ -31,28 +31,28 @@ public class SNPAnalysis extends AnalyzationLogic {
         ArrayList<Rule> ruleList = new ArrayList<Rule>();
         //Create a data access object for extracting rules from the database.
         RuleDAO ruleDAO = DAOFactory.getDAOFactory().getRuleDAO();
-        //Add all available rules from the database to the list of rules to be analyzed.
+        //Add all available rules from the database to the list of rules.
         ruleList.addAll( ruleDAO.getRules(true) );
 
-        List<Individual> individuals = analysisTask.getIndividuals();
+        List<Sample> samples = analysisTask.getSamples();
 
-        //Perform all available sub-analyses (rules) for each individual
-        for ( int i = 0; i < individuals.size(); i++) {
+        //Perform all available sub-analyses (rules) for each sample
+        for ( int i = 0; i < samples.size(); i++) {
             Results results = new Results(this.getTag(), false);
-            performSubAnalyses( analysisTask, individuals.get(i), ruleList, results );
-            analysisTask.addResults( individuals.get(i).getId(), this.getTag(), results);
+            performSubAnalyses(analysisTask, samples.get(i), ruleList, results );
+            analysisTask.addResults(samples.get(i).getId(), this.getTag(), results);
         }
 
     }
 
-    private void performSubAnalyses( AnalysisTask analysisTask, Individual individual, List<Rule> ruleList, Results results) {
+    private void performSubAnalyses( AnalysisTask analysisTask, Sample sample, List<Rule> ruleList, Results results) {
 
         JythonLogicExecutor jythonLogicExecutor = new JythonLogicExecutor(analysisTask);
 
        //Loop through all listed rules.
         for ( int i = 0; i < ruleList.size(); i++) {
             
-            LogicResult logicResult = jythonLogicExecutor.execute( ruleList.get(i).getLogic(), individual, ruleList.get(i).getInterestLevel() );
+            LogicResult logicResult = jythonLogicExecutor.execute( ruleList.get(i).getLogic(), sample, ruleList.get(i).getInterestLevel() );
 
             //If the logic script executed fails to return LogicResult, move to next iteration
             if ( logicResult == null ) {

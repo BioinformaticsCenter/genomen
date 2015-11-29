@@ -5,7 +5,7 @@ import com.genomen.utils.database.SchemaTruncator;
 import com.genomen.core.AnalysisRequest;
 import com.genomen.core.Configuration;
 import com.genomen.core.DataSet;
-import com.genomen.core.Individual;
+import com.genomen.core.Sample;
 import com.genomen.core.TaskState;
 import com.genomen.dao.DAOFactory;
 import com.genomen.dao.DataSetDAO;
@@ -228,14 +228,14 @@ public class GDCLI implements Observer {
     private void listDatasets() {
         
         DataSetDAO datasetDAO = DAOFactory.getDAOFactory().getDataSetDAO();
-        List<Individual> individuals = datasetDAO.getIndividuals();
+        List<Sample> individuals = datasetDAO.getIndividuals();
         
         if ( individuals.isEmpty() ) {
             System.out.println("No datasets imported");
         }
         else {
             System.out.println("Listing currently stored datasets:");  
-            for ( Individual individual : individuals ) {
+            for ( Sample individual : individuals ) {
                 System.out.print( individual.getId() + "\t");
                 List<String> dataTypes = datasetDAO.getDataTypes(individual.getId());
                 for ( String type: dataTypes) {

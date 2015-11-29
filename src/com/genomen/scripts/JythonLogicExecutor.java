@@ -4,7 +4,7 @@ import com.genomen.core.AnalysisTask;
 import com.genomen.entities.DataEntity;
 import com.genomen.entities.DataType;
 import com.genomen.entities.DataTypeManager;
-import com.genomen.core.Individual;
+import com.genomen.core.Sample;
 import com.genomen.core.Rule;
 import com.genomen.dao.DAOFactory;
 import com.genomen.dao.RuleDAO;
@@ -53,7 +53,7 @@ public class JythonLogicExecutor {
      * @param value value of the data
      * @return result of comparison as an instance of <code>LogicResult</code>
      */
-    public LogicResult compareToData( String type, Individual individual, String dataAttributeID, String dataAttributeValue, String attribute,  String value ) {
+    public LogicResult compareToData( String type, Sample individual, String dataAttributeID, String dataAttributeValue, String attribute,  String value ) {
 
         DataType dataType = DataTypeManager.getDataType(type);
         
@@ -84,7 +84,7 @@ public class JythonLogicExecutor {
      * @param id rule id
      * @return result of rule evaluation
      */
-    public LogicResult executeRule( Individual individual, String id ) {
+    public LogicResult executeRule( Sample individual, String id ) {
 
         RuleDAO ruleDAO = DAOFactory.getDAOFactory().getRuleDAO();
         Rule rule = ruleDAO.getRule(id);
@@ -107,7 +107,7 @@ public class JythonLogicExecutor {
      * @param defaultInterestLevel the default interest level of the rule
      * @return results of the decision rule
      */
-    public LogicResult execute(String logic, Individual individual, int defaultInterestLevel ) {
+    public LogicResult execute(String logic, Sample individual, int defaultInterestLevel ) {
 
         LogicResult result = null;
 

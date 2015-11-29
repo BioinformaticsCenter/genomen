@@ -1,9 +1,9 @@
-from com.genomen.core import Individual
+from com.genomen.core import Sample
 from com.genomen.scripts import LogicResult
 from com.genomen.scripts import JythonLogicExecutor
 
 jythonLogicExecutor
-individual = Individual("defaultId")
+individual = Sample("defaultId")
 defaultInterestLevel = 0
 
 class IntermediateResult(object):

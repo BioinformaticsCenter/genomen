@@ -14,7 +14,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class AnalysisExecutor {
     private static final int MAX_CONCURRENT_ANALYSES_PER_TASK = Configuration.getConfiguration().getMaxConcurrentAnalysesPerTask();
-    private static final int MAX_CONCURRENT_INDIVIDUALS_PER_TASK = Configuration.getConfiguration().getMaxConcurrentIndividualsPerTask();
+    private static final int MAX_CONCURRENT_SAMPLES_PER_TASK = Configuration.getConfiguration().getMaxConcurrentIndividualsPerTask();
     private static final int MAX_CONCURRENT_ANALYSES = Configuration.getConfiguration().getMaxConcurrentAnalyses();
     private static final int MAX_CONCURRENT_REQUESTS = Configuration.getConfiguration().getMaxConcurrentRequests();
     private static final int MAX_QUEUE_TIME = Configuration.getConfiguration().getMaxQueueTime();
@@ -35,11 +35,11 @@ public class AnalysisExecutor {
         return MAX_CONCURRENT_ANALYSES_PER_TASK;
     }
     /**
-     * Returns  the maximum number of individuals allowed to be processed simultaneously per task.
+     * Returns  the maximum number of samples allowed to be processed simultaneously per task.
      * @return maximum number of individuals processed per task.
      */
-    public static int getMaxConcurrentIndividualsPerTask() {
-        return MAX_CONCURRENT_INDIVIDUALS_PER_TASK;
+    public static int getMaxConcurrentSamplesPerTask() {
+        return MAX_CONCURRENT_SAMPLES_PER_TASK;
     }
 
     /**

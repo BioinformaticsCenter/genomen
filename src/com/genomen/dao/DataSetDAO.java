@@ -1,6 +1,6 @@
 package com.genomen.dao;
 
-import com.genomen.core.Individual;
+import com.genomen.core.Sample;
 import com.genomen.entities.DataEntity;
 import com.genomen.entities.DataType;
 import java.util.List;
@@ -50,13 +50,13 @@ public interface DataSetDAO {
      * @param id ID of an individual
      * @return instance of <code>Individual</code> or <code>null</code> if no matching individual is found.
      */
-    public abstract Individual getIndividual( String id);  
+    public abstract Sample getIndividual( String id);  
     
     /**
      * Lists currently stored individuals
      * @return
      */
-    public abstract List<Individual> getIndividuals();
+    public abstract List<Sample> getIndividuals();
     
     /**
      * Lists the datatypes currently associated with a certain sample.

@@ -21,7 +21,6 @@ public abstract class DerbySNPImporter extends DerbyImporter {
     
     public static final String VARIANT = "VARIANT";
     public static final String VARIANT_INFO = "VARIANT_INFO";
-
-
+    
 
 }

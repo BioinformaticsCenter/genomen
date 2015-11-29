@@ -126,7 +126,7 @@ public class Analyzer {
         AnalysisTask analysisTask = new AnalysisTask();
         analysisTask.setTaskID( taskID );
 
-        List<Individual> individuals = new ArrayList<>();
+        List<Sample> individuals = new ArrayList<>();
         
         for ( int i = 0; i < datasets.size(); i++ ) {
             Importer dataSetImporter = ImporterFactory.getDatasetImporterFactory().getImporter(datasets.get(i).getFormat());
@@ -148,8 +148,8 @@ public class Analyzer {
 
             individuals = selectIndividuals(analysisRequest.getSamples(), individuals, analysisRequest);
             
-            analysisTask.addIndividuals(individuals);
-            for ( Individual individual : individuals) {
+            analysisTask.addSamples(individuals);
+            for ( Sample individual : individuals) {
                 taskDAO.addIndividual(Configuration.getConfiguration().getDatabaseTempSchemaName(), taskID, individual.getId());
             }
         }
@@ -158,21 +158,21 @@ public class Analyzer {
             for ( String id : analysisRequest.getSamples()) {
                 
                 taskDAO.addIndividual(Configuration.getConfiguration().getDatabaseTempSchemaName(), taskID, id);
-                Individual individual = datasetDAO.getIndividual(id);
+                Sample individual = datasetDAO.getIndividual(id);
                 if ( individual != null) {
                     individuals.add( datasetDAO.getIndividual(id) );         
                 }
 
             }
-            analysisTask.addIndividuals(individuals);
+            analysisTask.addSamples(individuals);
         }
         
         return analysisTask;
     }   
      
-    private static List<Individual> selectIndividuals( List<String> samples, List<Individual> importedSamples, AnalysisRequest analysisRequest ) {
+    private static List<Sample> selectIndividuals( List<String> samples, List<Sample> importedSamples, AnalysisRequest analysisRequest ) {
         
-        List<Individual> selectedIndividuals = new ArrayList<Individual>();
+        List<Sample> selectedIndividuals = new ArrayList<Sample>();
         
         //If no samples are specified, use all samples in the dataset, 
         if (samples.isEmpty()) {

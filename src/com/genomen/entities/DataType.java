@@ -26,7 +26,7 @@ public final class DataType {
      * Gets the names of the attributes associated with this datatype.
      * @return a list of attribute names
      */
-    public List getAttributeNames() {
+    public List<String> getAttributeNames() {
         return new LinkedList( values.keySet() );
     } 
     

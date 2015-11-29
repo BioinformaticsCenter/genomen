@@ -1,7 +1,7 @@
 package com.genomen.dao;
 
 import com.genomen.core.Configuration;
-import com.genomen.core.Individual;
+import com.genomen.core.Sample;
 import com.genomen.entities.DataAttributeConverter;
 import com.genomen.entities.DataEntity;
 import com.genomen.entities.DataEntityAttributeValue;
@@ -200,10 +200,10 @@ public class DerbyDataSetDAO extends DerbyDAO implements DataSetDAO {
         }      
     }    
     
-    public Individual getIndividual( String individualID ) {
+    public Sample getIndividual( String individualID ) {
         
         Connection connection = null;
-        Individual individual = null;
+        Sample individual = null;
         
         try {
             connection = DerbyDAOFactory.createConnection();
@@ -223,7 +223,7 @@ public class DerbyDataSetDAO extends DerbyDAO implements DataSetDAO {
                     
                 //Currently no data besides ID is stored.
                 String id = results.getString("INDIVIDUAL_ID");
-                individual = new Individual(id); 
+                individual = new Sample(id); 
             }
 
             //Close the connection.
@@ -284,12 +284,12 @@ public class DerbyDataSetDAO extends DerbyDAO implements DataSetDAO {
     }
 
     @Override
-    public List<Individual> getIndividuals() {
+    public List<Sample> getIndividuals() {
         
-        List<Individual> individualList = new ArrayList<Individual>();
+        List<Sample> individualList = new ArrayList<Sample>();
         
         Connection connection = null;
-        Individual individual = null;
+        Sample individual = null;
         
         try {
             connection = DerbyDAOFactory.createConnection();
@@ -308,7 +308,7 @@ public class DerbyDataSetDAO extends DerbyDAO implements DataSetDAO {
 
                 //Currently no data besides ID is stored.
                 String id = results.getString("INDIVIDUAL_ID");
-                individual = new Individual(id); 
+                individual = new Sample(id); 
                 individualList.add(individual);
             }
 

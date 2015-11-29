@@ -3,7 +3,7 @@ package com.genomen.importers.derby;
 
 import com.genomen.dao.DerbyDAOFactory;
 import com.genomen.entities.DataEntityAttributeValue;
-import com.genomen.core.Individual;
+import com.genomen.core.Sample;
 import com.genomen.importers.Importer;
 import com.genomen.importers.ImporterException;
 import java.io.BufferedReader;
@@ -34,9 +34,9 @@ public class DerbyPEDImporter extends DerbySNPImporter implements Importer {
     private static final String MAP_ENDING = "map";    
     private static final String TEMP_FILE_NAME = "ped.tmp";
     
-    public List<Individual> importDataSet( String schemaName, String individualID, String[] fileNames ) {
+    public List<Sample> importDataSet( String schemaName, String individualID, String[] fileNames ) {
 
-        List<Individual> individualList = new LinkedList<Individual>();
+        List<Sample> individualList = new LinkedList<Sample>();
 
         String PEDFileName = findFile( fileNames, PED_ENDING );
         String MAPFileName = findFile( fileNames, MAP_ENDING );
@@ -61,7 +61,7 @@ public class DerbyPEDImporter extends DerbySNPImporter implements Importer {
             while ( PEDTokenizer.nextToken() != StreamTokenizer.TT_EOF) {
 
                 long beforeTime = System.currentTimeMillis();
-                Individual individual = parseIndividual(PEDTokenizer);
+                Sample individual = parseIndividual(PEDTokenizer);
                 individualList.add(individual);
 
                 importSNPs( PEDTokenizer, MAPFile, individual, schemaName );
@@ -90,7 +90,7 @@ public class DerbyPEDImporter extends DerbySNPImporter implements Importer {
         return individualList;
     }
 
-    private Individual parseIndividual( StreamTokenizer tokenizer ) {
+    private Sample parseIndividual( StreamTokenizer tokenizer ) {
 
         String familyID = "";
         String individualID = "";
@@ -115,10 +115,10 @@ public class DerbyPEDImporter extends DerbySNPImporter implements Importer {
         catch (IOException ex) {
             Logger.getLogger( this.getClass() ).error( ex );
         }
-        return new Individual(individualID, familyID);
+        return new Sample(individualID, familyID);
     }
 
-    private void importSNPs( StreamTokenizer PEDTokenizer, File MAPFile, Individual individual, String schemaName  ) throws ImporterException {
+    private void importSNPs( StreamTokenizer PEDTokenizer, File MAPFile, Sample individual, String schemaName  ) throws ImporterException {
 
         BufferedReader MAPReader = null;
         BufferedWriter bufferedWriter = null;

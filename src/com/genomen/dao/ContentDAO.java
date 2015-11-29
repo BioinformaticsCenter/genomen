@@ -144,4 +144,6 @@ public interface ContentDAO {
      * @return <code>true</code> if table exists, otherwise <code>false</code
      */
     public abstract boolean tableExists( String schemaName, String tableName );
+    
+     
 }

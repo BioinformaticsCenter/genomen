@@ -5,7 +5,7 @@ package com.genomen.core;
  * Presents identification data of a single person
  * @author ciszek
  */
-public class Individual {
+public class Sample {
 
 
     private String id = "";
@@ -30,7 +30,7 @@ public class Individual {
      * Constructs a presentation of an individual with the id given.
      * @param p_id the id of this individual
      */
-    public Individual( String p_id ) {
+    public Sample( String p_id ) {
         id = p_id;
     }
 
@@ -39,7 +39,7 @@ public class Individual {
      * @param p_id the id of this individual
      * @param p_familyID the family id of this individual
      */
-    public Individual( String p_id, String p_familyID ) {
+    public Sample( String p_id, String p_familyID ) {
         id = p_id;
         familyId = p_familyID;
     }

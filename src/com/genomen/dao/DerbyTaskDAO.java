@@ -1,7 +1,7 @@
 package com.genomen.dao;
 
 import com.genomen.core.Configuration;
-import com.genomen.core.Individual;
+import com.genomen.core.Sample;
 import com.genomen.core.TaskState;
 import java.sql.Connection;
 import java.sql.PreparedStatement;

@@ -1,7 +1,7 @@
 package com.genomen.reporter;
 
 import com.genomen.core.AnalysisTask;
-import com.genomen.core.Individual;
+import com.genomen.core.Sample;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -24,7 +24,7 @@ public class ReportCreator {
     public static Report createReport( AnalysisTask analysisTask, String name ,String language ) {
 
         Report report = new Report(name);
-        List<IndividualEntry> individualEntries = createIndividualEntries(analysisTask.getIndividuals());
+        List<IndividualEntry> individualEntries = createIndividualEntries(analysisTask.getSamples());
 
         for ( int individualIndex = 0; individualIndex < individualEntries.size(); individualIndex++) {
             report.addComponent(individualEntries.get(individualIndex));
@@ -36,7 +36,7 @@ public class ReportCreator {
         return report;
     }
 
-    private static List<IndividualEntry> createIndividualEntries( List<Individual> individuals ) {
+    private static List<IndividualEntry> createIndividualEntries( List<Sample> individuals ) {
 
         List<IndividualEntry> individualEntries = new LinkedList<IndividualEntry>();
 

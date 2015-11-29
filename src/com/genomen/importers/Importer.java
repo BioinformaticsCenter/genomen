@@ -1,6 +1,6 @@
 package com.genomen.importers;
 
-import com.genomen.core.Individual;
+import com.genomen.core.Sample;
 import java.util.List;
 
 /**
@@ -9,5 +9,5 @@ import java.util.List;
  */
 public interface Importer {
  
-    public abstract List<Individual> importDataSet( String schemaName, String individualID, String[] fileNames ) throws ImporterException;
+    public abstract List<Sample> importDataSet( String schemaName, String individualID, String[] fileNames ) throws ImporterException;
 }
