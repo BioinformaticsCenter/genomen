@@ -9,17 +9,16 @@
 		<id>VARIANT</id>
                 <attribute name="VARIANT_ID" type="VARCHAR" required="true" size="100"/>
 		<attribute name="CHROMOSOME" type="VARCHAR" size="100"/>
-		<attribute name="SEQUENCE_START" type="INT"/>		
-		<attribute name="SEQUENCE_END" type="INT"/>		
+		<attribute name="SEQUENCE_START" type="INT"/>			
 		<attribute name="STRAND" type="INT"/>			
 		<attribute name="ALLELE" type="VARCHAR" size="200"/>	
 	               			
 	</dataType>   
 	<dataType>
-		<id>VARIANT_METADATA</id>
+		<id>VARIANT_INFO</id>
 		<attribute name="VARIANT_ID" type="INT" required="true"/>
 		<attribute name="NAME" type="VARCHAR" size="100"/>
-		<attribute name="VALUE" type="VARCHAR size 200"/>			               			
+		<attribute name="VALUE" type="VARCHAR" size= "200"/>		                		               			
 	</dataType>                       
          
 </dataTypes>
