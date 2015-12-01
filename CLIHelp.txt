@@ -32,6 +32,11 @@ Command: -o <filename> -i <file path>,<format>,<id>
 	Example: -l ENG
 	Default: ENG
 
+	Parameter(Optional): -persist
+	Function: Flags the datasets to be left to the database after analysis is completed.
+	Example: -persist
+	Default: Datasets will be removed from the database after the analysis is completed.
+
 Command: -destroy-database
 Function: Clears the database
 Example: -destroy-database
