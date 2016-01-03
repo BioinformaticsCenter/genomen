@@ -100,6 +100,22 @@ public class ArgumentProcessor {
 
         return findParameter( COMMAND_OUTPUT, VALID_OUTPUT_REG_EXP, args );
     }
+    
+    protected static boolean knownInput( String[] args) throws InvalidCLIArgumentException {
+        if ( databaseDestructionRequired( args ) || 
+                databaseCreationRequired(args) ||
+                datasetImportRequired(args) ||
+                databaseExportRequired(args) ||
+                databaseTemplateRequired(args) ||
+                datasetListingRequired(args) ||
+                sampleRemovalRequired(args) ||
+                helpRequired( args ) ||
+                taskRequired(args)
+                ) {
+            return true;
+        }
+        return false;
+    }
 
     protected static List<DataSet> parseDataSets( String[] args ) throws InvalidCLIArgumentException {
 

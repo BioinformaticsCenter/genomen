@@ -296,7 +296,7 @@ public class DerbyDataSetDAO extends DerbyDAO implements DataSetDAO {
         }
         catch (Exception ex) {
             Logger.getLogger( DerbyContentDAO.class ).debug(ex);
-            return null;
+            return individualList;
         }
 
         try {

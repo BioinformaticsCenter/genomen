@@ -26,6 +26,8 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
@@ -37,12 +39,46 @@ import java.util.Observer;
  */
 public class Genomen implements Observer {
 
+    private static final String HELP_FILE_PATH = "CLIHelp.txt";
 
+    private static final String MESSAGE_GENOMEN_VERSION = "Genomen version: ";
+    private static final String MESSAGE_TASK_STARTED = "Task started: ";
+    private static final String MESSAGE_TASK_COMPLETED = "Task completed: ";
     private static final String MESSAGE_LOADING_DATASETS = "Loading datasets...";
     private static final String MESSAGE_CREATING_REPORTS = "Creating reports...";
     private static final String MESSAGE_PERFORMING_ANALYSIS = "Performing analysis...";
     private static final String MESSAGE_CLEARING_DATA = "Clearing data...";
     private static final String MESSAGE_UNABLE_TO_READ_HELP = "Unable to read CLIHelp.txt";
+    
+    private static final String MESSAGE_CREATING_DATABASE = "Creating database...";
+    private static final String MESSAGE_DATABASE_CREATED = "Database created!";
+    
+    private static final String MESSAGE_IMPORTING_DATABASE = "Creating database...";
+    private static final String MESSAGE_DATABASE_IMPORTED = "Database imported!";    
+    
+    private static final String MESSAGE_EXPORTING_DATABASE = "Exporting database...";
+    private static final String MESSAGE_DATABASE_EXPORTED = "Database exported!";    
+    
+    private static final String MESSAGE_CREATING_TEMPLATE = "Creating template...";
+    private static final String MESSAGE_TEMPLATE_CREATED = "Template created!";
+    
+    private static final String MESSAGE_IMPORTING_DATASETS = "Importing dataset...";
+    private static final String MESSAGE_DATASET_IMPORTING_COMPLETED = "Importing completed.";
+    
+    private static final String MESSAGE_NO_DATASETS_IMPORTED = "No datasets stored.";
+    private static final String MESSAGE_LISTING_DATASETS = "Listing currently stored datasets:";
+    
+    private static final String MESSAGE_REMOVING_SAMPLES = "Removing samples...";
+    private static final String MESSAGE_SAMPLES_TO_REMOVE = "Samples to be removed: "; 
+    private static final String MESSAGE_REMOVING_ALL_SAMPLES = "No samples specified, removing all samples.";     
+    private static final String MESSAGE_SAMPLES_REMOVED = "Samples removed!";
+    
+    private static final String MESSAGE_DELETING_DATABASE = "Deleting database";
+    private static final String MESSAGE_DATABASE_DELETED = "Database deleted";
+    
+    private static final String MESSAGE_DATASET_IMPORT_ERROR = "Unable to import dataset: ";
+    
+    private static final float VERSION = 0.8f;
     
     public static void main ( String[] args ) {
 
@@ -50,20 +86,19 @@ public class Genomen implements Observer {
         
         try {   
             
-            if ( ArgumentProcessor.helpRequired( args )) {
+            if ( ArgumentProcessor.helpRequired( args ) || ! ArgumentProcessor.knownInput(args)) {
                 cli.printHelp();
                 return;
             }
+            cli.printStartMessage(); 
             cli.performMaintainance(args);  
             if ( ArgumentProcessor.taskRequired(args)) {
                 cli.initializeAnalysis(args);     
             }
-        
+            cli.printCompletedMessage(); 
         }
         catch (InvalidCLIArgumentException ex) {
-            System.out.print(ex);
             cli.printHelp();
-
         }    
         
     }
@@ -73,31 +108,33 @@ public class Genomen implements Observer {
     private void performMaintainance( String[] args ) throws InvalidCLIArgumentException {
         
         if ( ArgumentProcessor.databaseDestructionRequired( args )) {
+            System.out.println(MESSAGE_DELETING_DATABASE);
             SchemaTruncator.truncate(Configuration.getConfiguration().getDatabaseSchemaName(),true);
+            System.out.println(MESSAGE_DATABASE_DELETED);            
         }
         if ( ArgumentProcessor.databaseCreationRequired(args)) {
-            System.out.println("Creating database...");
+            System.out.println(MESSAGE_CREATING_DATABASE);
             DatabaseRecreator.recreateDatabase(args[1]);
-            System.out.println("Database created!");              
+            System.out.println(MESSAGE_DATABASE_CREATED);              
         }    
         if ( ArgumentProcessor.datasetImportRequired(args)) {
             importDatasets(args);
         }        
         if ( ArgumentProcessor.databaseImportRequired(args)) {
             XMLImporter importer = new XMLImporter();
-            System.out.println("Importing database...");            
+            System.out.println(MESSAGE_IMPORTING_DATABASE);            
             importer.importToDatabase(ArgumentProcessor.getImportedDbFile(args), Configuration.getConfiguration().getDatabaseSchemaName()); 
-            System.out.println("Database imported!");   
+            System.out.println(MESSAGE_DATABASE_IMPORTED);   
         }
         if ( ArgumentProcessor.databaseExportRequired(args)) {
-            System.out.println("Exporting database...");
+            System.out.println(MESSAGE_EXPORTING_DATABASE);
             XMLExporter.export(Configuration.getConfiguration().getDatabaseSchemaName(), ArgumentProcessor.getExportedFile(args));
-            System.out.println("Database exported!");            
+            System.out.println(MESSAGE_DATABASE_EXPORTED);            
         }
         if ( ArgumentProcessor.databaseTemplateRequired(args)) {
-            System.out.println("Creating template...");
+            System.out.println(MESSAGE_CREATING_TEMPLATE);
             XMLTemplateCreator.createXMLTemplate(Configuration.getConfiguration().getDatabaseSchemaName(), ArgumentProcessor.getTemplateFile(args));  
-            System.out.println("Template created!");              
+            System.out.println(MESSAGE_TEMPLATE_CREATED);              
         }
         if ( ArgumentProcessor.datasetListingRequired(args)) {
             listDatasets(); 
@@ -124,7 +161,6 @@ public class Genomen implements Observer {
      * Performs the analysis.
      */
     private void performAnalysis() {
-        System.out.println("Task started");
         AnalysisExecutor.start();
         AnalysisExecutor.requestAnalysis(analysisRequest);
     }
@@ -148,14 +184,11 @@ public class Genomen implements Observer {
                 XMLReportCreator.createXML(analysisRequest.getReport(i));
                 XSLTTransformer.transform(analysisRequest.getReport(i).getName() + ".xml", Configuration.getConfiguration().getXSLTFilePath(), analysisRequest.getReport(i).getName() + ".html");                       
             }  
-    
-
-            
+           
         }
-        System.out.println("Task completed");
+
     }
     
-
     public synchronized void update(Observable o, Object arg) {
 
         if ( analysisRequest.isFinished()) {
@@ -175,13 +208,22 @@ public class Genomen implements Observer {
         }
         
     }
+    
+    private void printStartMessage() {
+        System.out.println(MESSAGE_GENOMEN_VERSION + VERSION);
+        System.out.println(MESSAGE_TASK_STARTED + new SimpleDateFormat("HH:mm:ss dd.MM.yyyy").format(Calendar.getInstance().getTime()));
+    }    
+    
+    private void printCompletedMessage() {
+        System.out.println(MESSAGE_TASK_COMPLETED + new SimpleDateFormat("HH:mm:ss dd.MM.yyyy").format(Calendar.getInstance().getTime()));
+    }     
 
     /**
      * Prints the contents of CLIHelp.txt
      */
     private void printHelp() {
 
-        File file = new File("CLIHelp.txt");
+        File file = new File(HELP_FILE_PATH);
         BufferedReader bufferedReader = null;
 
         try {
@@ -206,7 +248,7 @@ public class Genomen implements Observer {
     }
     
     private void importDatasets(String[] args) throws InvalidCLIArgumentException {
-        System.out.println("Importing dataset...");      
+        System.out.println(MESSAGE_IMPORTING_DATASETS);      
         List<DataSet> datasets = ArgumentProcessor.parseDataSets(args);
         for ( int i = 0; i < datasets.size(); i++ ) {
             Importer dataSetImporter = ImporterFactory.getDatasetImporterFactory().getImporter(datasets.get(i).getFormat());
@@ -218,23 +260,22 @@ public class Genomen implements Observer {
             try {
                 dataSetImporter.importDataSet( Configuration.getConfiguration().getDatabaseTempSchemaName(), datasets.get(i).getName(), datasets.get(i).getFiles());
             } catch (ImporterException ex) {          
-                System.out.println(ex);
+                System.out.println(MESSAGE_DATASET_IMPORT_ERROR + ex.getMessage() );
             }
 
         }
-        System.out.println("Importing completed.");  
+        System.out.println(MESSAGE_DATASET_IMPORTING_COMPLETED);  
     }
     
     private void listDatasets() {
         
         DataSetDAO datasetDAO = DAOFactory.getDAOFactory().getDataSetDAO();
         List<Sample> individuals = datasetDAO.getIndividuals();
-        
+        System.out.println(MESSAGE_LISTING_DATASETS); 
         if ( individuals.isEmpty() ) {
-            System.out.println("No datasets imported");
+            System.out.println(MESSAGE_NO_DATASETS_IMPORTED);
         }
-        else {
-            System.out.println("Listing currently stored datasets:");  
+        else { 
             for ( Sample individual : individuals ) {
                 System.out.print( individual.getId() + "\t");
                 List<String> dataTypes = datasetDAO.getDataTypes(individual.getId());
@@ -250,10 +291,25 @@ public class Genomen implements Observer {
     private void removeSamples( String[] args ) throws InvalidCLIArgumentException {
         
         DataSetDAO datasetDAO = DAOFactory.getDAOFactory().getDataSetDAO();
-        System.out.println("Removing samples...");      
+        System.out.println(MESSAGE_REMOVING_SAMPLES);      
         List<String> samples = ArgumentProcessor.parseRequiredSamples(args);
+       
+        
+        if ( samples.isEmpty()) {
+            List<Sample> allSamples = datasetDAO.getIndividuals(); 
+            for ( Sample sample : allSamples ) {
+                samples.add( sample.getId() );
+            }
+            System.out.println(MESSAGE_REMOVING_ALL_SAMPLES);
+        }   
+        else {
+            System.out.println(MESSAGE_SAMPLES_TO_REMOVE);
+            for ( String id : samples) {
+                System.out.println(id);
+            }
+        }
         datasetDAO.removeIndividuals(samples);
-        System.out.println("Samples removed.");          
+
     }
     
     
