@@ -37,11 +37,11 @@ Command: -o <filename> -i <file path>,<format>,<id>
 	Example: -persist
 	Default: Datasets will be removed from the database after the analysis is completed.
 
-Command: -destroy-database
+Command: -destroy-db
 Function: Clears the database
 Example: -destroy-database
 
-Command: -create-database <SQL statement file>
+Command: -create-db <SQL statement file>
 Function: Creates a new databased using the SQL statements given as a parameter, overwriting the original database.
 Example: -create-database SQLCommands.txt
 

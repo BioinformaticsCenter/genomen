@@ -41,7 +41,7 @@ public class ArgumentProcessor {
     private static final String VALID_LANGUAGE_REG_EXP = "^\\w+";
 
     private static final String COMMAND_HELP = "-help";
-    private static final String COMMAND_DESTROY_DATABASE = "-destroy-database";
+    private static final String COMMAND_DESTROY_DATABASE = "-destroy-db";
     
     private static final String COMMAND_IMPORT_DATABASE = "-import-db";
     private static final String VALID_IMPORT_DATABASE_REGEXP = "^[A-Za-z0-9_/\\.]*\\.xml";
@@ -52,7 +52,7 @@ public class ArgumentProcessor {
     private static final String COMMAND_CREATE_DATABASE_TEMPLATE = "-template";
     private static final String VALID_DATABASE_TEMPLATE_REGEXP = "^[A-Za-z0-9_/\\.]*";
   
-    private static final String COMMAND_CREATE_DATABASE = "-create-database";
+    private static final String COMMAND_CREATE_DATABASE = "-create-db";
     private static final String VALID_CREATE_DATABASE_REGEXP = "^[A-Za-z0-9_/\\.]*";    
     
     private static final String COMMAND_PERSIST_DATASETS = "-persist";
