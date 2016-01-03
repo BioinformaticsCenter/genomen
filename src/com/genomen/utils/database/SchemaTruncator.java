@@ -15,8 +15,9 @@ public class SchemaTruncator {
      * Truncates a specific schema.
      * @param schemaName schema name
      * @param clearDiscSpace is disk space to be cleared.
+     * @return <code>true</code> if schema was truncated, <code>false</code> otherwise.
      */
-    public static void truncate( String schemaName, boolean clearDiscSpace ) {
+    public static boolean truncate( String schemaName, boolean clearDiscSpace ) {
 
         //Create a graph of the database structure
         DatabaseGraph databaseGraph = DatabaseGraphBuilder.buildDatabaseGraph(schemaName);
@@ -25,6 +26,10 @@ public class SchemaTruncator {
        
         String[] tables = contentDAO.getTables(schemaName);
 
+        if ( tables == null) {
+            return false;
+        }
+        
         LinkedList<String> tablesLeft = new LinkedList<String>();
         tablesLeft.addAll(Arrays.asList(tables));
 
@@ -38,7 +43,7 @@ public class SchemaTruncator {
         if ( clearDiscSpace ) {
             clearUnusedDiscSpace(schemaName);
         }
-
+        return true;
 
     }
     //Recursively attempts to truncate all tables in the table dependency chain.

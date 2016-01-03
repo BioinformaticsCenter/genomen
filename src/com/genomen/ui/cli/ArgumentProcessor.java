@@ -7,6 +7,8 @@ import com.genomen.reporter.ReportFormat;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 /**
@@ -16,10 +18,11 @@ import java.util.List;
 public class ArgumentProcessor {
 
     private static final String COMMAND_OUTPUT = "-o";
-    private static final String VALID_OUTPUT_REG_EXP = "^\\w+";
+    private static final String VALID_OUTPUT_REGEXP = "^[\\/\\w]+";
+    private static final String VALID_OUTPUT_PATH_REGEXP = "^[\\/]?([\\w_]+[\\/])*";
 
     private static final String COMMAND_OUTPUT_FORMAT = "-f";
-    private static final String VALID_OUTPUT_FORMAT_REG_EXP = "^\\w+";     
+    private static final String VALID_OUTPUT_FORMAT_REGEXP = "^\\w+";     
     
     private static final String COMMAND_ANALYSES = "-a";
     private static final String VALID_ANALYSES_REG_EXP = "^[\\w\\.]+";    
@@ -70,6 +73,7 @@ public class ArgumentProcessor {
     public static AnalysisRequest createRequest( String[] args ) throws InvalidCLIArgumentException {
 
         String outputName = parseOutputName(args);
+        String outputPath = parseOutputPath(args);        
         List<String> requiredAnalyses = parseRequiredAnalyses(args);
         List<String> requiredFormats = parseFormats(args);        
         String language = parseLanguage(args);
@@ -83,7 +87,8 @@ public class ArgumentProcessor {
         
         AnalysisRequest analysisRequest = null;
         analysisRequest = new AnalysisRequest( dataSets, requiredAnalyses, requiredSamples,language, requiredFormats  );
-        analysisRequest.setName(outputName);   
+        analysisRequest.setName(outputName); 
+        analysisRequest.setOutputPath(outputPath);
         
         //Skip dataset removal if persistence is required or no input dataset is defined, 
         if ( datasetPersistenceRequired(args) ) {
@@ -97,15 +102,42 @@ public class ArgumentProcessor {
     }
 
     private static String parseOutputName( String[] args ) throws InvalidCLIArgumentException {
-
-        return findParameter( COMMAND_OUTPUT, VALID_OUTPUT_REG_EXP, args );
+        String outputDefinition = findParameter( COMMAND_OUTPUT, VALID_OUTPUT_REGEXP, args );
+        
+        if (outputDefinition == null ) {
+            throw new InvalidCLIArgumentException(ERROR_MESSAGE);
+        }
+        
+        String[] outputName = outputDefinition.split("[\\/]");
+        
+        return outputName[outputName.length-1];
     }
+    
+    private static String parseOutputPath( String[] args ) throws InvalidCLIArgumentException {
+        String outputDefinition = findParameter( COMMAND_OUTPUT, VALID_OUTPUT_REGEXP, args );
+        
+        if (outputDefinition == null ) {
+            throw new InvalidCLIArgumentException(ERROR_MESSAGE);
+        }
+        
+        Pattern pattern = Pattern.compile(VALID_OUTPUT_PATH_REGEXP);
+
+        Matcher matcher = pattern.matcher(outputDefinition);
+        String path = "";
+        
+        if (matcher.find()) {
+            path = matcher.group();  
+        }
+
+        return path;
+    }    
     
     protected static boolean knownInput( String[] args) throws InvalidCLIArgumentException {
         if ( databaseDestructionRequired( args ) || 
                 databaseCreationRequired(args) ||
                 datasetImportRequired(args) ||
                 databaseExportRequired(args) ||
+                databaseImportRequired(args) || 
                 databaseTemplateRequired(args) ||
                 datasetListingRequired(args) ||
                 sampleRemovalRequired(args) ||
@@ -135,7 +167,7 @@ public class ArgumentProcessor {
             
             if ( dataSets[dataSetIndex].matches(VALID_FILE_REG_EXP)) {
                      
-                DataSet dataSet = createDataSet(dataSets[dataSetIndex]);
+                DataSet dataSet = createDataSet(dataSets[dataSetIndex].trim());
                 dataSetList.add(dataSet);              
             }        
         }
@@ -159,9 +191,9 @@ public class ArgumentProcessor {
   
         for ( int formatIndex = 0; formatIndex < requestedFormats.length; formatIndex++) {
             
-            if ( requestedFormats[formatIndex].matches(VALID_OUTPUT_FORMAT_REG_EXP)) {
+            if ( requestedFormats[formatIndex].matches(VALID_OUTPUT_FORMAT_REGEXP)) {
                      
-                formats.add(requestedFormats[formatIndex]);    
+                formats.add(requestedFormats[formatIndex].trim());    
 
             }        
         }        
@@ -184,7 +216,7 @@ public class ArgumentProcessor {
             
             if ( requestedAnalyses[analysisIndex].matches(VALID_ANALYSES_REG_EXP)) {
                      
-                analyses.add(requestedAnalyses[analysisIndex]);    
+                analyses.add(requestedAnalyses[analysisIndex].trim());    
             }        
         }        
         return analyses;   
@@ -206,7 +238,7 @@ public class ArgumentProcessor {
             
             if ( requestedSamples[sampleIndex].matches(VALID_SAMPLE_REG_EXP)) {
                      
-                samples.add(requestedSamples[sampleIndex]);    
+                samples.add(requestedSamples[sampleIndex].trim());    
             }        
         }        
         return samples;   
@@ -219,13 +251,13 @@ public class ArgumentProcessor {
         String format = "";
         String[] parameters = parameterSet.split(DATASET_ARGUMENT_SEPARATOR);
       
-        format = parameters[1];
+        format = parameters[1].trim();
         
         if ( parameters.length == 3) {
-            name = parameters[2];
+            name = parameters[2].trim();
         }
                
-        String[] files = parameters[0].split(DATASET_FILE);
+        String[] files = parameters[0].replace("\\s+", "").split(DATASET_FILE);
 
         return new DataSet( name, files, format );
         

@@ -336,7 +336,7 @@ public class DerbyDataSetDAO extends DerbyDAO implements DataSetDAO {
         String[] tables = contentDAO.getTables( Configuration.getConfiguration().getDatabaseTempSchemaName() );
         
         for ( String table: tables ) {    
-            if ( table.matches( ".*_" + sampleID.toUpperCase() + "$")) {
+            if ( table.matches( "^.*_" + sampleID.toUpperCase() + "$")) {
 
                 String[] split = table.split("_");
                 
@@ -348,6 +348,5 @@ public class DerbyDataSetDAO extends DerbyDAO implements DataSetDAO {
         }    
        return dataTypeIDs; 
     }
-      
-
+     
 }

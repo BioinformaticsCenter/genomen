@@ -38,7 +38,6 @@ public class Analyzer {
         
         //If analysistask could not be created, 
         if ( analysisTask == null) {
-            analysisRequest.addError( new Error( Error.ErrorType.UNABLE_TO_IMPORT));
             analysisRequest.changeState( TaskState.FINISHED ); 
             return;
         }
@@ -139,9 +138,8 @@ public class Analyzer {
                 individuals = dataSetImporter.importDataSet( Configuration.getConfiguration().getDatabaseTempSchemaName(), datasets.get(i).getName(), datasets.get(i).getFiles());
             } catch (ImporterException ex) {          
                 
-                if ( ex.getMessage().equals( ImporterException.INDIVIDUAL_ID_ERROR )) {
-                    analysisRequest.addError( new Error(Error.ErrorType.INDIVIDUAL_EXISTS));
-                }       
+                analysisRequest.addError( new Error(Error.ErrorType.UNABLE_TO_IMPORT, ex.getMessage()));
+     
                 Logger.getLogger(Analyzer.class ).debug(ex);
                 return null;
             }

@@ -11,6 +11,7 @@ public class ImporterException extends Exception {
     public static final String DATA_TABLE_INDEX_ERROR = "Valid database index for dataset can not be retrieved: ";
     public static final String INDIVIDUAL_ID_ERROR = "Individual Id already exists: ";
     public static final String UNABLE_TO_READ_DATASET = "Unable to read dataset: ";
+    public static final String MALFORMED_DATABASE = "Malformed database. Unable to import.";    
      
     public ImporterException( String message ) {
         super(message);

@@ -20,6 +20,11 @@ public class DatabaseGraphBuilder {
         ContentDAO contentDAO = DAOFactory.getDAOFactory().getContentDAO();
 
         String[] tableNames = contentDAO.getTables(schemaName);
+        
+        if ( tableNames == null ) {
+            return databaseGraph;
+        }
+        
         //Add a TableNode representing each table in the database to the graph
         for ( int tableIndex = 0; tableIndex < tableNames.length; tableIndex++ ) {
 

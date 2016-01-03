@@ -32,6 +32,8 @@ public class AnalysisRequest extends Observable {
     
     //Required name of the report
     private String name = "";
+    //Path for the output
+    private String outputPath = "";    
     //Required language of the report.
     private String language = null;
     //Is the analysis finished
@@ -46,21 +48,6 @@ public class AnalysisRequest extends Observable {
     private ArrayList<Error> errors = new ArrayList<Error>();
 
     /**
-     * Returns a report from a specified index.
-     * @param index index of the required report.
-     * @return <code>Report</code> from the specified index or null if the index is invalid.
-     */
-    public Report getReport( int index ) {
-
-        if ( index < reports.size() && index >= 0 && reports.size() > 0 ) {
-            return reports.get(index);
-        }
-        else {
-            return null;
-        }
-
-    }
-    /**
      * Adds a <code>Report</code> to this request
      * @param p_report report to be added.
      */
@@ -68,25 +55,13 @@ public class AnalysisRequest extends Observable {
         reports.add(p_report);
     }
     /**
-     * Returns the total amount of reports in this request.
-     * @return the total amount of reports.
+     * Returns the reports included in this request
+     * @return the reports included
      */
-    public int getTotalReports() {
-        return reports.size();
+    public List<Report> getReports() {
+        return reports;
     }
-    /**
-     * Gets an error from a specified index.
-     * @param index index of the required Error.
-     * @return error from the specified index, or null if the index is invalid.
-     */
-    public Error getError( int index) {
-        if ( index < errors.size() && index >= 0 && errors.size() > 0 ) {
-            return errors.get(index);
-        }
-        else {
-            return null;
-        }
-    }
+
     /**
      * Adds an <code>Error</code> to the this request
      * @param errorEntity
@@ -95,11 +70,11 @@ public class AnalysisRequest extends Observable {
         errors.add(errorEntity);
     }
     /**
-     * Returns the total amount of errors listed.
-     * @return the total amount of errors.
+     * Returns the errors that occurred during the analysis.
+     * @return list of errors
      */
-    public int getTotalErrors() {
-        return errors.size();
+    public List<Error> getErrors() {
+        return errors;
     }
     /**
      * Returns the total amount of analyses required in this request.
@@ -172,6 +147,22 @@ public class AnalysisRequest extends Observable {
     public void setName( String p_name) {
         name = p_name;
     }
+    
+    /**
+     * Return the output path of the analysis
+     * @return output path
+     */
+    public String getPath() {
+        return outputPath;
+    }
+    
+    /**
+     * Sets the output path of the analysis
+     * @param path output path
+     */
+    public void setOutputPath( String path)  {
+        outputPath = path;
+    }    
 
     /**
      * Constructs an analysis request from given datasets, analyses and language report language id.

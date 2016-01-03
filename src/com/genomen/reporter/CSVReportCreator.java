@@ -15,7 +15,7 @@ public class CSVReportCreator {
     
     private static final String DELIMITER = ",";
     
-    public static void createCSV( Report report ) {
+    public static void createCSV( String path, Report report ) {
         
              
         for ( IndividualEntry individual : report.getIndividualEntries()) {
@@ -25,7 +25,7 @@ public class CSVReportCreator {
                 if ( component instanceof TraitTable ) {
                     
                     TraitTable table = (TraitTable)component;
-                    String fileName = report.getName() + "_" + individual.getIndividual().getId() + "_" + table.getTitle() + ".csv";
+                    String fileName = path + report.getName() + "_" + individual.getIndividual().getId() + "_" + table.getTitle() + ".csv";
                     writeFile(table, fileName);
                 }
             }         
@@ -36,12 +36,14 @@ public class CSVReportCreator {
         
             File file = new File(fileName);
 
-            if ( file.exists() ) {
-                file.delete();
-            }
-
             BufferedWriter bufferedWriter = null;
             try {
+                
+                file.mkdirs();
+                if ( file.exists() ) {
+                    file.delete();
+                }            
+                file.createNewFile();                
 
                 bufferedWriter = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file),"UTF8"));
                 reportTable.writeDelimited(bufferedWriter, DELIMITER);

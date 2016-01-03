@@ -10,6 +10,7 @@ import com.genomen.dao.TaskDAO;
 import com.genomen.entities.DataEntityAttributeValue;
 import com.genomen.entities.DataType;
 import com.genomen.entities.DataTypeManager;
+import com.genomen.importers.ImporterException;
 import java.io.File;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -18,6 +19,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.logging.Level;
 import org.apache.log4j.Logger;
 
 /**
@@ -34,9 +36,7 @@ public abstract class DerbyImporter extends DerbyDAO {
      * @param names a list of sample names
      * @return <code>true</code> if individuals were successfully inserted, <code>false</code> otherwise.
      */
-    protected boolean insertIndividuals( List<String> names ) {
-        
-        boolean success = true;
+    protected void insertIndividuals( List<String> names ) throws ImporterException {   
         
         String insertStatement = "INSERT INTO " + Configuration.getConfiguration().getDatabaseTempSchemaName() + ".Individuals ( INDIVIDUAL_ID)  " + " VALUES ( ? )";
               
@@ -45,13 +45,7 @@ public abstract class DerbyImporter extends DerbyDAO {
              
         try {
             connection = DerbyDAOFactory.createConnection();
-        }
-        catch (Exception ex) {
-            Logger.getLogger( DerbyImporter.class ).debug(ex);
-            success = false;
-        }
 
-        try {
             statement = connection.prepareStatement(insertStatement);
             
             for ( String name : names) {
@@ -63,14 +57,27 @@ public abstract class DerbyImporter extends DerbyDAO {
             statement.close();
 
 
-        } catch (SQLException ex) {
-            Logger.getLogger( DerbyImporter.class ).debug(ex);
-            success = false;
+        } catch (SQLException exception) {
+            Logger.getLogger( DerbyImporter.class ).debug(exception);
+            ContentDAO contentDAO = DAOFactory.getDAOFactory().getContentDAO();
+            if ( contentDAO.tableExists(Configuration.getConfiguration().getDatabaseTempSchemaName(), "Individuals") ) {
+                throw new ImporterException(ImporterException.INDIVIDUAL_ID_ERROR);     
+            }
+            else {
+             throw new ImporterException(ImporterException.MALFORMED_DATABASE); 
+            }
+
+
         }
+        catch(ClassNotFoundException | InstantiationException | IllegalAccessException ex) {
+            Logger.getLogger( DerbyImporter.class ).debug(ex);
+            throw new ImporterException(ImporterException.CONNECTION_FAILURE);
+        }
+
         finally {
             closeConnection(connection);
         }
-        return success;
+
     }
 
     /**

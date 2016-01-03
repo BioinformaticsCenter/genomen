@@ -16,21 +16,24 @@ public class XMLReportCreator {
 
     /**
      * Creates an XML presentation of a report
+     * @param path Output file path
      * @param report a report to be presented as XML document
      */
-    public static void createXML( Report report ) {
+    public static void createXML( String path, Report report ) {
 
         String fileName = report.getName();
-        String filePath = fileName.concat(".xml");
+        String filePath = path + fileName.concat(".xml");
         File file = new File(filePath);
 
-        if ( file.exists() ) {
-            file.delete();
-        }
 
 
         BufferedWriter bufferedWriter = null;
         try {
+            file.mkdirs();
+            if ( file.exists() ) {
+                file.delete();
+            }            
+            file.createNewFile();
 
             bufferedWriter = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file),"UTF8"));
             bufferedWriter.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?> \n");

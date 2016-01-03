@@ -41,7 +41,7 @@ public class Genomen implements Observer {
 
     private static final String HELP_FILE_PATH = "CLIHelp.txt";
 
-    private static final String MESSAGE_GENOMEN_VERSION = "Genomen version: ";
+    private static final String MESSAGE_GENOMEN_VERSION = "genomen version: ";
     private static final String MESSAGE_TASK_STARTED = "Task started: ";
     private static final String MESSAGE_TASK_COMPLETED = "Task completed: ";
     private static final String MESSAGE_LOADING_DATASETS = "Loading datasets...";
@@ -53,7 +53,7 @@ public class Genomen implements Observer {
     private static final String MESSAGE_CREATING_DATABASE = "Creating database...";
     private static final String MESSAGE_DATABASE_CREATED = "Database created!";
     
-    private static final String MESSAGE_IMPORTING_DATABASE = "Creating database...";
+    private static final String MESSAGE_IMPORTING_DATABASE = "Importing database...";
     private static final String MESSAGE_DATABASE_IMPORTED = "Database imported!";    
     
     private static final String MESSAGE_EXPORTING_DATABASE = "Exporting database...";
@@ -75,9 +75,11 @@ public class Genomen implements Observer {
     
     private static final String MESSAGE_DELETING_DATABASE = "Deleting database";
     private static final String MESSAGE_DATABASE_DELETED = "Database deleted";
+    private static final String MESSAGE_DATABASE_DOES_NOT_EXIST = "Unable to delete database. Database does not exist.";
     
     private static final String MESSAGE_DATASET_IMPORT_ERROR = "Unable to import dataset: ";
-    
+    private static final String MESSAGE_ERROR_OCCURRED = "ERROR: ";  
+      
     private static final float VERSION = 0.8f;
     
     public static void main ( String[] args ) {
@@ -95,7 +97,10 @@ public class Genomen implements Observer {
             if ( ArgumentProcessor.taskRequired(args)) {
                 cli.initializeAnalysis(args);     
             }
-            cli.printCompletedMessage(); 
+            else {
+                cli.printCompletedMessage();     
+            }
+
         }
         catch (InvalidCLIArgumentException ex) {
             cli.printHelp();
@@ -109,8 +114,13 @@ public class Genomen implements Observer {
         
         if ( ArgumentProcessor.databaseDestructionRequired( args )) {
             System.out.println(MESSAGE_DELETING_DATABASE);
-            SchemaTruncator.truncate(Configuration.getConfiguration().getDatabaseSchemaName(),true);
-            System.out.println(MESSAGE_DATABASE_DELETED);            
+            if ( SchemaTruncator.truncate(Configuration.getConfiguration().getDatabaseSchemaName(),true) ) {
+                System.out.println(MESSAGE_DATABASE_DELETED); 
+            }
+            else {
+                System.out.println( MESSAGE_DATABASE_DOES_NOT_EXIST );
+            }
+            
         }
         if ( ArgumentProcessor.databaseCreationRequired(args)) {
             System.out.println(MESSAGE_CREATING_DATABASE);
@@ -172,21 +182,29 @@ public class Genomen implements Observer {
 
         AnalysisExecutor.shutDown();
         //Loop through all the reports
-        for ( int i = 0; i < analysisRequest.getTotalReports(); i++) {
+        for ( int i = 0; i < analysisRequest.getReports().size(); i++) {
 
             if ( analysisRequest.getRequiredFormats().contains( ReportFormat.CSV.getName() ) ) {
-                CSVReportCreator.createCSV(analysisRequest.getReport(i));
+                CSVReportCreator.createCSV(analysisRequest.getPath(), analysisRequest.getReports().get(i));
             }
             if ( analysisRequest.getRequiredFormats().contains( ReportFormat.XML.getName() ) ) {
-                XMLReportCreator.createXML(analysisRequest.getReport(i));
+                XMLReportCreator.createXML(analysisRequest.getPath(),analysisRequest.getReports().get(i));
             }                
             if ( analysisRequest.getRequiredFormats().contains( ReportFormat.HTML.getName() ) ) {
-                XMLReportCreator.createXML(analysisRequest.getReport(i));
-                XSLTTransformer.transform(analysisRequest.getReport(i).getName() + ".xml", Configuration.getConfiguration().getXSLTFilePath(), analysisRequest.getReport(i).getName() + ".html");                       
+                XMLReportCreator.createXML(analysisRequest.getPath(), analysisRequest.getReports().get(i));
+                XSLTTransformer.transform( analysisRequest.getPath() + analysisRequest.getReports().get(i).getName() + ".xml", Configuration.getConfiguration().getXSLTFilePath(), analysisRequest.getPath() + analysisRequest.getReports().get(i).getName() + ".html");                       
             }  
            
         }
+        if ( !analysisRequest.getErrors().isEmpty()) {
+            System.out.println(MESSAGE_ERROR_OCCURRED);
+            for ( com.genomen.core.Error error : analysisRequest.getErrors()) {
+                System.out.println("\t" + error.getErrorSource());
+            }  
+        }
 
+        
+        printCompletedMessage();
     }
     
     public synchronized void update(Observable o, Object arg) {
@@ -300,12 +318,12 @@ public class Genomen implements Observer {
             for ( Sample sample : allSamples ) {
                 samples.add( sample.getId() );
             }
-            System.out.println(MESSAGE_REMOVING_ALL_SAMPLES);
+            System.out.println("\t" + MESSAGE_REMOVING_ALL_SAMPLES);
         }   
         else {
-            System.out.println(MESSAGE_SAMPLES_TO_REMOVE);
+            System.out.println("\t" + MESSAGE_SAMPLES_TO_REMOVE);
             for ( String id : samples) {
-                System.out.println(id);
+                System.out.println("\t"+id);
             }
         }
         datasetDAO.removeIndividuals(samples);

@@ -10,8 +10,9 @@ import com.genomen.dao.ErrorDAO;
 public class Error {
 
     private final ErrorType type;
-    private String sourceName = null;
-    
+    private String sourceName = "";
+    private String message = "";
+ 
     public enum ErrorType {
         
         FILE_NOT_FOUND(1),
@@ -19,8 +20,7 @@ public class Error {
         CORE_SHUTDOWN(3),
         CAN_NOT_READ_FILE(4),
         ANALYSIS_NOT_AVAILABLE(5),
-        UNABLE_TO_IMPORT(6),
-        INDIVIDUAL_EXISTS(7);
+        UNABLE_TO_IMPORT(6);
         
         private final int id;
         
@@ -66,7 +66,7 @@ public class Error {
     public Error( ErrorType p_type, String p_sourceName ) {
         type = p_type;
         sourceName = p_sourceName;
-    }
+    }   
 
     /**
      * Retrieves the error message associated with the error type given as a 
