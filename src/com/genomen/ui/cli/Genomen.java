@@ -35,7 +35,7 @@ import java.util.Observer;
  * Command-line UI for GenOmen
  * @author ciszek
  */
-public class GDCLI implements Observer {
+public class Genomen implements Observer {
 
 
     private static final String MESSAGE_LOADING_DATASETS = "Loading datasets...";
@@ -46,7 +46,7 @@ public class GDCLI implements Observer {
     
     public static void main ( String[] args ) {
 
-        GDCLI cli = new GDCLI();
+        Genomen cli = new Genomen();
         
         try {   
             
