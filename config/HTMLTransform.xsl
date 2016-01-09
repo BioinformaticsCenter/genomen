@@ -20,25 +20,28 @@
 		}
 
 		table {
-			border-collapse:collapse;
+                    border-collapse:collapse;
+                    border: 1px solid black;
 		}
 		th {
-		  background-color:#0066FF;
-		  color:white;
+                    background-color:#0066FF;
+                    color:white;
+                    border: 1px solid black;
 		}
 		td {
-			padding:5px;
+                    padding:5px;
+                    border: 1px solid black;      
 		}
-		table, td, th {		
-			border: 1px solid black;		
+		table {
+                    width: 100%;			
 		}
 		div.trait {
+           		background-color:#E6F0FF;
 			border: 1px solid black;
 			padding: 10px;	
 			margin: 20px 2% 20px 2%;			
 		}
 		div.individual {
-			background-color:#E6F0FF;	
 			border-style:solid;
 			border-width:1px;
 			padding: 10px;	
@@ -54,9 +57,15 @@
 		<h2><xsl:value-of select="id"/></h2>
 		<xsl:for-each select="traitTable/traitEntry">
 			<div class="trait">
-				<h3><b><xsl:value-of select="title/."/></b></h3>
-				<p><xsl:value-of select="shortDescription/."/></p>	
-				<p><xsl:value-of select="longDescription/."/></p>		
+                                <xsl:if test="title != ''">
+				<h3><b><xsl:value-of select="title"/></b></h3>
+                                </xsl:if>
+                                <xsl:if test="shortDescription != ''">
+                                    <p><xsl:value-of select="shortDescription"/></p>  
+                                </xsl:if>
+                                <xsl:if test="longDescription != ''">
+                                    <p><xsl:value-of select="longDescription"/></p>	   
+                                </xsl:if>
 				  <table>
 					<tr>
 						<xsl:for-each select="table/headers/*">
@@ -67,7 +76,14 @@
 					<xsl:for-each select="table/rows/row">
 					<tr>
 						<xsl:for-each select="*">
-							<td><xsl:value-of select="."/></td>
+                                                    <td>
+                                                        <xsl:if test=". != ''">
+                                                            <xsl:value-of select="."/>     
+                                                        </xsl:if>   
+                                                        <xsl:if test=". != ''">
+ 
+                                                        </xsl:if>   
+                                                    </td>                                                 
 						</xsl:for-each>
 					</tr>
 					</xsl:for-each>

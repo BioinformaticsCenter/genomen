@@ -19,6 +19,7 @@ public class DerbyTraitDAO extends DerbyDAO implements TraitDAO {
      * @param language Language of the description.
      * @return Short description of a trait.
      */
+    @Override
     public String getShortDescription( String symbolicName, String language ) {
 
         String shortDescription = "";

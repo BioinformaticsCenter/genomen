@@ -1,6 +1,7 @@
 package com.genomen.ui.cli;
 
 import com.genomen.core.AnalysisRequest;
+import com.genomen.core.Configuration;
 import com.genomen.core.DataSet;
 import com.genomen.core.Logics;
 import com.genomen.reporter.ReportFormat;
@@ -77,6 +78,11 @@ public class ArgumentProcessor {
         List<String> requiredAnalyses = parseRequiredAnalyses(args);
         List<String> requiredFormats = parseFormats(args);        
         String language = parseLanguage(args);
+        
+        if ( language == null) {
+            language = Configuration.getConfiguration().getLanguage();
+        }
+        
         List<DataSet> dataSets = parseDataSets(args);
         List<String> requiredSamples = parseRequiredSamples(args);
         

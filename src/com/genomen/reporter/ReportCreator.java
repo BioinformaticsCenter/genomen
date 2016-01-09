@@ -21,7 +21,7 @@ public class ReportCreator {
      * @param language report language
      * @return analysis report
      */
-    public static Report createReport( AnalysisTask analysisTask, String name ,String language ) {
+    public static Report createReport( AnalysisTask analysisTask, String name, String language ) {
 
         Report report = new Report(name);
         List<IndividualEntry> individualEntries = createIndividualEntries(analysisTask.getSamples());
