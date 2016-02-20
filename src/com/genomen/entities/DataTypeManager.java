@@ -9,9 +9,17 @@ import java.util.Map;
  */
 public class DataTypeManager {
     
+    private static DataTypeManager instance = new DataTypeManager();
+    
+    public static DataTypeManager getInstance() {
+        return instance;
+    }
+    
     private static Map<String, DataType> dataTypes = DataTypeReader.readDataTypes(Configuration.getConfiguration().getDataTypeListPath() );
     
-    public static DataType getDataType( String dataTypeID ) {
+    private DataTypeManager() {}
+    
+    public DataType getDataType( String dataTypeID ) {
         return dataTypes.get(dataTypeID);
     }
     

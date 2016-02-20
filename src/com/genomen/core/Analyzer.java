@@ -10,6 +10,7 @@ import com.genomen.importers.ImporterException;
 import com.genomen.reporter.Report;
 import com.genomen.reporter.ReportCreator;
 import com.genomen.utils.RandomStringGenerator;
+import com.genomen.analyses.AnalyzationLogic;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.log4j.Logger;
@@ -90,8 +91,8 @@ public class Analyzer {
 
         for ( int i = 0; i < requestedAnalyses.size(); i++) {
 
-            if ( Logics.getInstance().analyzationLogicAvailable(requestedAnalyses.get(i)) ) {
-                performableAnalyses.add( Logics.getInstance().getAnalyzationLogic(requestedAnalyses.get(i)) );
+            if ( Analyses.getInstance().analyzationLogicAvailable(requestedAnalyses.get(i)) ) {
+                performableAnalyses.add( Analyses.getInstance().getAnalyzationLogic(requestedAnalyses.get(i)) );
             }
             else {
                 analysisRequest.addError(new Error( ErrorType.ANALYSIS_NOT_AVAILABLE, requestedAnalyses.get(i) ) );

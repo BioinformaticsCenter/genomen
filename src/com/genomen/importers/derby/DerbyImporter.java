@@ -6,7 +6,6 @@ import com.genomen.dao.DAOFactory;
 import com.genomen.dao.DataSetDAO;
 import com.genomen.dao.DerbyDAO;
 import com.genomen.dao.DerbyDAOFactory;
-import com.genomen.dao.TaskDAO;
 import com.genomen.entities.DataEntityAttributeValue;
 import com.genomen.entities.DataType;
 import com.genomen.entities.DataTypeManager;
@@ -19,7 +18,6 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.logging.Level;
 import org.apache.log4j.Logger;
 
 /**
@@ -91,7 +89,7 @@ public abstract class DerbyImporter extends DerbyDAO {
         
         DataSetDAO dataSetDAO = DAOFactory.getDAOFactory().getDataSetDAO();
         ContentDAO contentDAO = DAOFactory.getDAOFactory().getContentDAO();
-        DataType dataType = DataTypeManager.getDataType(type);
+        DataType dataType = DataTypeManager.getInstance().getDataType(type);
         String tableName = dataSetDAO.createTableName(individualID.toUpperCase(), dataType );
 
         
@@ -134,7 +132,7 @@ public abstract class DerbyImporter extends DerbyDAO {
 
         StringBuilder tuple = new StringBuilder();
        
-        DataType dataType = DataTypeManager.getDataType(type);
+        DataType dataType = DataTypeManager.getInstance().getDataType(type);
         
         List<String> dataTypeAttributes = dataType.getAttributeNames();
         for ( int i = 0; i < dataTypeAttributes.size(); i++) {
@@ -165,7 +163,7 @@ public abstract class DerbyImporter extends DerbyDAO {
     
     protected int getCurrentId( String individualID, String type ) {
         
-        DataType dataType = DataTypeManager.getDataType(type);
+        DataType dataType = DataTypeManager.getInstance().getDataType(type);
         
         if ( dataType == null ) {
             return INVALID_ID;

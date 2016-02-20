@@ -5,7 +5,7 @@ import com.genomen.entities.DataEntity;
 import com.genomen.entities.DataType;
 import com.genomen.entities.DataTypeManager;
 import com.genomen.core.Sample;
-import com.genomen.core.Rule;
+import com.genomen.analyses.snp.Rule;
 import com.genomen.dao.DAOFactory;
 import com.genomen.dao.RuleDAO;
 
@@ -32,7 +32,7 @@ public class JythonLogicExecutor {
         analysisTask = p_analysisTask;
         ScriptEngineManager manager = new ScriptEngineManager ();
         scriptEngine = manager.getEngineByName ("jython");
-        String script = JythonBaseScriptReader.getInstance().getBaseScript();
+        String script = JythonBaseScript.getInstance().getBaseScript();
 
         try {
             scriptEngine.put("jythonLogicExecutor", this );
@@ -55,7 +55,7 @@ public class JythonLogicExecutor {
      */
     public LogicResult compareToData( String type, Sample individual, String dataAttributeID, String dataAttributeValue, String attribute,  String value ) {
 
-        DataType dataType = DataTypeManager.getDataType(type);
+        DataType dataType = DataTypeManager.getInstance().getDataType(type);
         
         LogicResult result = new LogicResult();
         result.setType(LogicResult.BOOLEAN);

@@ -3,7 +3,7 @@ package com.genomen.ui.cli;
 import com.genomen.core.AnalysisRequest;
 import com.genomen.core.Configuration;
 import com.genomen.core.DataSet;
-import com.genomen.core.Logics;
+import com.genomen.core.Analyses;
 import com.genomen.reporter.ReportFormat;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -13,7 +13,7 @@ import java.util.regex.Pattern;
 
 
 /**
- * Creates a valid analysis request based on command-line arguments.
+ * Interprets command-line arguments and creates a valid analysis request based on command-line arguments.
  * @author ciszek
  */
 public class ArgumentProcessor {
@@ -39,29 +39,29 @@ public class ArgumentProcessor {
     private static final String VALID_SAMPLE_REG_EXP = "^[A-Za-z0-9_/\\.]+(,[A-Za-z0-9_/\\.]+)*";
     private static final String SAMPLE_SEPARATOR = ",";    
     
-    private static final String COMMAND_REMOVE_SAMPLE = "-remove";     
+    private static final String COMMAND_REMOVE_SAMPLE = "--remove";     
 
     private static final String COMMAND_LANGUAGE = "-l";
     private static final String VALID_LANGUAGE_REG_EXP = "^\\w+";
 
-    private static final String COMMAND_HELP = "-help";
-    private static final String COMMAND_DESTROY_DATABASE = "-destroy-db";
+    private static final String COMMAND_HELP = "--help";
+    private static final String COMMAND_DESTROY_DATABASE = "--destroy-db";
     
-    private static final String COMMAND_IMPORT_DATABASE = "-import-db";
+    private static final String COMMAND_IMPORT_DATABASE = "--import-db";
     private static final String VALID_IMPORT_DATABASE_REGEXP = "^[A-Za-z0-9_/\\.]*\\.xml";
              
-    private static final String COMMAND_EXPORT_DATABASE = "-export";
+    private static final String COMMAND_EXPORT_DATABASE = "--export";
     private static final String VALID_EXPORT_DATABASE_REGEXP = "^[A-Za-z0-9_/\\.]*";
     
-    private static final String COMMAND_CREATE_DATABASE_TEMPLATE = "-template";
+    private static final String COMMAND_CREATE_DATABASE_TEMPLATE = "--template";
     private static final String VALID_DATABASE_TEMPLATE_REGEXP = "^[A-Za-z0-9_/\\.]*";
   
-    private static final String COMMAND_CREATE_DATABASE = "-create-db";
+    private static final String COMMAND_CREATE_DATABASE = "--create-db";
     private static final String VALID_CREATE_DATABASE_REGEXP = "^[A-Za-z0-9_/\\.]*";    
     
-    private static final String COMMAND_PERSIST_DATASETS = "-persist";
+    private static final String COMMAND_PERSIST_DATASETS = "--persist";
     
-    private static final String COMMAND_LIST_DATASETS = "-list";    
+    private static final String COMMAND_LIST_DATASETS = "--list";    
     
     private static final String ERROR_MESSAGE = "Invalid command syntax";
 
@@ -88,7 +88,7 @@ public class ArgumentProcessor {
         
         //If output file is specified but no alayses are listed, perform all analyses.
         if ( outputName != null && requiredAnalyses.isEmpty()) {         
-            requiredAnalyses=  Logics.getInstance().getAnalyzationLogics();
+            requiredAnalyses=  Analyses.getInstance().getAnalyzationLogics();
         }
         
         AnalysisRequest analysisRequest = null;

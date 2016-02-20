@@ -1,6 +1,6 @@
 package com.genomen.dao;
 
-import com.genomen.core.Rule;
+import com.genomen.analyses.snp.Rule;
 import java.util.List;
 
 /**

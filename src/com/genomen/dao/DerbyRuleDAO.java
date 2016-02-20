@@ -2,7 +2,7 @@
 package com.genomen.dao;
 
 import com.genomen.core.Configuration;
-import com.genomen.core.Rule;
+import com.genomen.analyses.snp.Rule;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;

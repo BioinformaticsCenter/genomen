@@ -1,5 +1,6 @@
-package com.genomen.core;
+package com.genomen.analyses;
 
+import com.genomen.core.AnalysisTask;
 import org.w3c.dom.Element;
 
 /**

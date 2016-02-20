@@ -11,10 +11,10 @@ import org.apache.log4j.Logger;
  * Provides singleton access point to base jython script used by analysis rules
  * @author ciszek
  */
-public class JythonBaseScriptReader {
+public class JythonBaseScript {
 
     
-    private static final JythonBaseScriptReader instance = new JythonBaseScriptReader();
+    private static final JythonBaseScript instance = new JythonBaseScript();
     
     private String baseScript;
 
@@ -26,7 +26,7 @@ public class JythonBaseScriptReader {
         return baseScript;
     }
 
-    public JythonBaseScriptReader() {
+    public JythonBaseScript() {
         baseScript = readScript();
     }
     
@@ -34,7 +34,7 @@ public class JythonBaseScriptReader {
      * Returns singleton instance of JythonBaseScriptReader
      * @return instance of JythonBaseScriptReader
      */
-    public static JythonBaseScriptReader getInstance() {
+    public static JythonBaseScript getInstance() {
         return instance;
     }
     
@@ -58,10 +58,10 @@ public class JythonBaseScriptReader {
 
         }
         catch (FileNotFoundException ex) {
-            Logger.getLogger(JythonBaseScriptReader.class ).debug(ex);
+            Logger.getLogger(JythonBaseScript.class ).debug(ex);
         }
         catch (IOException ex) {
-            Logger.getLogger(JythonBaseScriptReader.class ).debug(ex);
+            Logger.getLogger(JythonBaseScript.class ).debug(ex);
         }
 
         return script;

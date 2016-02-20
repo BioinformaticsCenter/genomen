@@ -1,10 +1,9 @@
-package com.genomen.analyses;
+package com.genomen.analyses.snp;
 
 import com.genomen.core.AnalysisTask;
-import com.genomen.core.AnalyzationLogic;
+import com.genomen.analyses.AnalyzationLogic;
 import com.genomen.core.Sample;
 import com.genomen.core.Results;
-import com.genomen.core.Rule;
 import com.genomen.core.SNPResultEntity;
 import com.genomen.dao.DAOFactory;
 import com.genomen.dao.RuleDAO;

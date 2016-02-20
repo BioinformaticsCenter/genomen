@@ -1,4 +1,4 @@
-package com.genomen.core;
+package com.genomen.analyses.snp;
 
 
 /**

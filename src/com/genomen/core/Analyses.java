@@ -1,5 +1,6 @@
 package com.genomen.core;
 
+import com.genomen.analyses.AnalyzationLogic;
 import com.genomen.utils.DOMDocumentCreator;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -14,9 +15,9 @@ import org.w3c.dom.NodeList;
  * Provides access to available analyzation logics.
  * @author ciszek
  */
-public class Logics {
+public class Analyses {
 
-    private static Logics instance = new Logics();
+    private static Analyses instance = new Analyses();
     
     //A map of available analyses.
     private Map<String, AnalyzationLogic> availableAnalyses;
@@ -25,11 +26,11 @@ public class Logics {
      * Gets the instance <code>Logics</code> currently available for the system.
      * @return instance of logics.
      */
-    public static Logics getInstance() {
+    public static Analyses getInstance() {
         return instance;
     }
 
-    private Logics() {
+    private Analyses() {
         
         availableAnalyses = getLocics(Configuration.getConfiguration().getAnalyzationLogicListPath());
         
@@ -76,7 +77,7 @@ public class Logics {
         Document logicsDocument = DOMDocumentCreator.createDocument(logicListFilePath);
 
         if ( logicsDocument == null ) {
-            Logger.getLogger( Logics.class ).debug(Error.getMessage( Error.ErrorType.FILE_NOT_FOUND, logicListFilePath));
+            Logger.getLogger(Analyses.class ).debug(Error.getMessage( Error.ErrorType.FILE_NOT_FOUND, logicListFilePath));
             return returnedLogics;
         }
 
@@ -94,13 +95,13 @@ public class Logics {
                 analyzationLogic = (AnalyzationLogic)logicClass.newInstance();
             }
             catch (ClassNotFoundException ex) {
-                Logger.getLogger( Logics.class ).debug(ex);
+                Logger.getLogger(Analyses.class ).debug(ex);
             }
             catch (InstantiationException ex) {
-                Logger.getLogger( Logics.class).error(ex);
+                Logger.getLogger(Analyses.class).error(ex);
             }
            catch (IllegalAccessException ex) {
-                Logger.getLogger( Logics.class).error(ex);
+                Logger.getLogger(Analyses.class).error(ex);
             }
 
             //Extract parameters
