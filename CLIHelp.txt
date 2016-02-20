@@ -5,11 +5,11 @@ Command: -o <filename> -i <file path>,<format>,<id>
 	Example: -o testresults
 
 	Parameter(Optional): -i <file path>,<format>,<id>
-	Function: Specifies the path and format of the dataset file. The last parameter specifies the id of the individual and must be left empty if the dataset contains an id for the individual.
+	Function: Specifies the path and format of the dataset file. The last parameter specifies the id of the sample and must be left empty if the dataset contains an id for the sample.
 	Example: -i datasets/example.txt,23AndMe,anonymous
 
 	Parameter(Optional): -i <file path>,<format>,<id>;<file path>,<format>,<id>
-	Function: Specifies the paths and formats of the dataset files. The last parameter specifies the id of the individual and must be left empty if the dataset contains an id for the individual. Semicolon can be used to separate multiple files.
+	Function: Specifies the paths and formats of the dataset files. The last parameter specifies the id of the sample and must be left empty if the dataset contains an id for the sample. Semicolon can be used to separate multiple files.
 	Example: -i datasets/example1.txt,23AndMe,anonymous1;datasets/example2.txt,23AndMe,anonymous2
 
 	Parameter(Optional): -s <sample id 1>,...,<sample id n>
@@ -39,11 +39,11 @@ Command: -o <filename> -i <file path>,<format>,<id>
 
 Command: -destroy-db
 Function: Clears the database
-Example: -destroy-database
+Example: -destroy-db
 
 Command: -create-db <SQL statement file>
 Function: Creates a new databased using the SQL statements given as a parameter, overwriting the original database.
-Example: -create-database SQLCommands.txt
+Example: -create-db SQLCommands.txt
 
 Command: -import-db <database XML-file>
 Function: Imports the data in the XML file given as a parameter to corresponding tables in the database.
@@ -61,7 +61,7 @@ Command: -list
 Function: Lists all the samples and associated data currently stored in the database.
 Example: -list
 
-Command: -remove -s <sample id 1>,...,<sample id n>
+Command: -remove-samples -s <sample id 1>,...,<sample id n>
 Function: Removes specified samples and all associated data from the database.
 Example: -remove SAMPLE01
 
