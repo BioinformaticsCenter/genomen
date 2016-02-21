@@ -6,7 +6,6 @@ import com.genomen.entities.DataAttributeConverter;
 import com.genomen.entities.DataEntity;
 import com.genomen.entities.DataEntityAttributeValue;
 import com.genomen.entities.DataType;
-import com.genomen.entities.DataTypeManager;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;

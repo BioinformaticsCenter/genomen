@@ -29,6 +29,7 @@ import java.io.InputStreamReader;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
@@ -71,8 +72,11 @@ public class Genomen implements Observer {
     
     private static final String MESSAGE_REMOVING_SAMPLES = "Removing samples...";
     private static final String MESSAGE_SAMPLES_TO_REMOVE = "Samples to be removed: "; 
+    private static final String MESSAGE_NO_SUCH_SAMPLE = "Sample does not exist: ";      
     private static final String MESSAGE_REMOVING_ALL_SAMPLES = "No samples specified, removing all samples.";     
-    private static final String MESSAGE_SAMPLES_REMOVED = "Samples removed!";
+    private static final String MESSAGE_SAMPLES_REMOVED = "samples removed.";
+    private static final String MESSAGE_SAMPLE_REMOVED = "One sample removed.";
+    private static final String MESSAGE_NO_SAMPLES_TO_REMOVE = "No samples to remove.";    
     
     private static final String MESSAGE_DELETING_DATABASE = "Deleting database";
     private static final String MESSAGE_DATABASE_DELETED = "Database deleted";
@@ -310,25 +314,56 @@ public class Genomen implements Observer {
     
     private void removeSamples( String[] args ) throws InvalidCLIArgumentException {
         
-        DataSetDAO datasetDAO = DAOFactory.getDAOFactory().getDataSetDAO();
-        System.out.println(MESSAGE_REMOVING_SAMPLES);      
+        DataSetDAO datasetDAO = DAOFactory.getDAOFactory().getDataSetDAO();    
         List<String> samples = ArgumentProcessor.parseRequiredSamples(args);
      
         if ( samples.isEmpty()) {
             List<Sample> allSamples = datasetDAO.getIndividuals(); 
-            for ( Sample sample : allSamples ) {
-                samples.add( sample.getId() );
-            }
-            System.out.println("\t" + MESSAGE_REMOVING_ALL_SAMPLES);
+            if (samples.size() > 0) {
+                System.out.println(MESSAGE_REMOVING_ALL_SAMPLES);   
+                System.out.println(MESSAGE_SAMPLES_TO_REMOVE);
+                for ( Sample sample : allSamples ) {
+                    samples.add( sample.getId() );
+                    System.out.println(sample.getId());
+                }                
+            }            
         }   
         else {
-            System.out.println("\t" + MESSAGE_SAMPLES_TO_REMOVE);
+            List<String> validSamples = new ArrayList<String>();
             for ( String id : samples) {
-                System.out.println("\t"+id);
+                Sample sample = datasetDAO.getIndividual(id);
+                if ( sample == null ) {
+                    System.out.println(MESSAGE_NO_SUCH_SAMPLE + id ); 
+                }
+                else {
+                    validSamples.add(id);
+                }
             }
+            samples = validSamples;
+            if (samples.size() > 0) {
+                System.out.println(MESSAGE_SAMPLES_TO_REMOVE);
+                for ( String id : samples) {
+                    System.out.println(id);
+                }  
+                System.out.println(MESSAGE_REMOVING_SAMPLES);                  
+            }
+
         }
+        
         datasetDAO.removeIndividuals(samples);
         
+        switch (samples.size()) {
+            case 0:
+                System.out.println( MESSAGE_NO_SAMPLES_TO_REMOVE);
+                break;
+            case 1:
+                System.out.println( MESSAGE_SAMPLE_REMOVED );
+                break;
+            default:
+                System.out.println( samples.size() + " " + MESSAGE_SAMPLES_REMOVED );                
+                break;
+        }
+
     }
     
     
