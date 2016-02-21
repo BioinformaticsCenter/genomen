@@ -1,7 +1,7 @@
 package com.genomen.analyses.snp;
 
 import com.genomen.core.AnalysisTask;
-import com.genomen.analyses.AnalyzationLogic;
+import com.genomen.analyses.Analysis;
 import com.genomen.core.Sample;
 import com.genomen.core.Results;
 import com.genomen.core.SNPResultEntity;
@@ -17,7 +17,7 @@ import java.util.List;
  * Defines an expert system based analysis performed on SNP data.
  * @author ciszek
  */
-public class SNPAnalysis extends AnalyzationLogic {
+public class SNPAnalysis extends Analysis {
 
 
     public String getTag() {

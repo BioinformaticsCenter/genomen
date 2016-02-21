@@ -10,7 +10,7 @@ import com.genomen.importers.ImporterException;
 import com.genomen.reporter.Report;
 import com.genomen.reporter.ReportCreator;
 import com.genomen.utils.RandomStringGenerator;
-import com.genomen.analyses.AnalyzationLogic;
+import com.genomen.analyses.Analysis;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.log4j.Logger;
@@ -74,7 +74,7 @@ public class Analyzer {
     /*
      * Performs the requested analyzes
      */
-    private static void performAnalyses( AnalysisTask analysisTask, List<AnalyzationLogic> performableAnalyses ) {
+    private static void performAnalyses( AnalysisTask analysisTask, List<Analysis> performableAnalyses ) {
 
         for ( int i = 0; i < performableAnalyses.size(); i++) {
             performableAnalyses.get(i).analyze(analysisTask);
@@ -84,10 +84,10 @@ public class Analyzer {
     /**
      * Returns a list of performable analyzes based on a the list of requested analyzes
      */
-    private static List<AnalyzationLogic> createPerformableAnalysisList( AnalysisRequest analysisRequest ) {
+    private static List<Analysis> createPerformableAnalysisList( AnalysisRequest analysisRequest ) {
 
         List<String> requestedAnalyses = analysisRequest.getRequiredAnalyses();
-        ArrayList<AnalyzationLogic> performableAnalyses = new ArrayList<AnalyzationLogic>();
+        ArrayList<Analysis> performableAnalyses = new ArrayList<Analysis>();
 
         for ( int i = 0; i < requestedAnalyses.size(); i++) {
 

@@ -26,8 +26,9 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
@@ -229,11 +230,12 @@ public class Genomen implements Observer {
     
     private void printStartMessage() {
         System.out.println(MESSAGE_GENOMEN_VERSION + VERSION);
-        System.out.println(MESSAGE_TASK_STARTED + new SimpleDateFormat("HH:mm:ss dd.MM.yyyy").format(Calendar.getInstance().getTime()));
+
+        System.out.println(MESSAGE_TASK_STARTED + LocalDateTime.now().format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM)));
     }    
     
     private void printCompletedMessage() {
-        System.out.println(MESSAGE_TASK_COMPLETED + new SimpleDateFormat("HH:mm:ss dd.MM.yyyy").format(Calendar.getInstance().getTime()));
+        System.out.println(MESSAGE_TASK_COMPLETED + LocalDateTime.now().format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM)));
     }     
 
     /**
@@ -311,8 +313,7 @@ public class Genomen implements Observer {
         DataSetDAO datasetDAO = DAOFactory.getDAOFactory().getDataSetDAO();
         System.out.println(MESSAGE_REMOVING_SAMPLES);      
         List<String> samples = ArgumentProcessor.parseRequiredSamples(args);
-       
-        
+     
         if ( samples.isEmpty()) {
             List<Sample> allSamples = datasetDAO.getIndividuals(); 
             for ( Sample sample : allSamples ) {
@@ -327,7 +328,7 @@ public class Genomen implements Observer {
             }
         }
         datasetDAO.removeIndividuals(samples);
-
+        
     }
     
     

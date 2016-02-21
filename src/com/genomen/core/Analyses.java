@@ -1,6 +1,6 @@
 package com.genomen.core;
 
-import com.genomen.analyses.AnalyzationLogic;
+import com.genomen.analyses.Analysis;
 import com.genomen.utils.DOMDocumentCreator;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -20,7 +20,7 @@ public class Analyses {
     private static Analyses instance = new Analyses();
     
     //A map of available analyses.
-    private Map<String, AnalyzationLogic> availableAnalyses;
+    private Map<String, Analysis> availableAnalyses;
     
     /**
      * Gets the instance <code>Logics</code> currently available for the system.
@@ -63,16 +63,16 @@ public class Analyses {
      * @param analyzationLogicName the name of the logic
      * @return instance of the specified logic or <code>null</code>
      */
-    public AnalyzationLogic getAnalyzationLogic( String analyzationLogicName ) {
+    public Analysis getAnalyzationLogic( String analyzationLogicName ) {
         return availableAnalyses.get(analyzationLogicName);
     }
     
     /**
      * Parses AnalyzationLogics from a XML file.
      */
-    private Map<String, AnalyzationLogic> getLocics( String logicListFilePath ) {
+    private Map<String, Analysis> getLocics( String logicListFilePath ) {
 
-        HashMap<String, AnalyzationLogic> returnedLogics = new  HashMap<String, AnalyzationLogic>();
+        HashMap<String, Analysis> returnedLogics = new  HashMap<String, Analysis>();
 
         Document logicsDocument = DOMDocumentCreator.createDocument(logicListFilePath);
 
@@ -86,13 +86,13 @@ public class Analyses {
         //Loop through logics
         for ( int logicIndex = 0; logicIndex < logicList.getLength(); logicIndex++) {
 
-            AnalyzationLogic analyzationLogic = null;
+            Analysis analyzationLogic = null;
 
             //Extract class data from logic
             Element logic = (Element)logicList.item(logicIndex);
             try {
                 Class logicClass = Class.forName(logic.getAttribute("class"));
-                analyzationLogic = (AnalyzationLogic)logicClass.newInstance();
+                analyzationLogic = (Analysis)logicClass.newInstance();
             }
             catch (ClassNotFoundException ex) {
                 Logger.getLogger(Analyses.class ).debug(ex);

@@ -7,7 +7,7 @@ import org.w3c.dom.Element;
  * Base class for different analyses.
  * @author ciszek
  */
-public abstract class AnalyzationLogic {
+public abstract class Analysis {
 
 
     private Element element;

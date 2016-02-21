@@ -3,8 +3,10 @@ package com.genomen.reporter;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -63,14 +65,7 @@ public class Report extends CompositeReportComponent {
     }
 
     private static String getDate() {
-
-        Calendar calendar = Calendar.getInstance();
-        String date = String.valueOf(calendar.get( Calendar.DATE) );
-        String month = String.valueOf(calendar.get( Calendar.MONTH) + 1);
-        String year = String.valueOf(calendar.get( Calendar.YEAR ) );
-
-        return date + "." + month + "." + year;
-
+        return LocalDateTime.now().format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM));
     }
 
     @Override
