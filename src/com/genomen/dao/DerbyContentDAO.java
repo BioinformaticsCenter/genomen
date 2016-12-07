@@ -682,6 +682,10 @@ public class DerbyContentDAO extends DerbyDAO implements ContentDAO {
         boolean isCreated = false;
         String[] tables = getTables(schemaName);
 
+        if ( tables == null) {
+            return isCreated;
+        }
+        
         for ( int i = 0; i < tables.length; i++) {
             if ( tables[i].equals(tableName) ) {
                 isCreated = true;

@@ -112,7 +112,7 @@ public class Analyzer {
         List<DataSet> datasets = analysisRequest.getDataSets();
          
         String taskID = RandomStringGenerator.generateRandomString(10);
-
+        
         TaskDAO taskDAO = DAOFactory.getDAOFactory().getTaskDAO();
         DataSetDAO datasetDAO = DAOFactory.getDAOFactory().getDataSetDAO();
         
