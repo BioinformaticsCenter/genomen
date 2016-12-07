@@ -178,7 +178,7 @@ public class AnalysisTask {
         if ( !individualResultsMap.containsKey(individualId) ) {
             return new LinkedList<Results>();
         }
-        return new LinkedList( individualResultsMap.get( individualId).values());
+        return new LinkedList<Results>( individualResultsMap.get( individualId).values());
 
     }
 

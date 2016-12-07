@@ -27,7 +27,7 @@ public final class DataType {
      * @return a list of attribute names
      */
     public List<String> getAttributeNames() {
-        return new LinkedList( values.keySet() );
+        return new LinkedList<String>( values.keySet() );
     } 
     
     /**

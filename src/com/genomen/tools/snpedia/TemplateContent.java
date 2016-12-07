@@ -15,13 +15,13 @@ public class TemplateContent {
     private String id;
     // TODO: For example population diversity tables contain duplicate values (i.e. allele frequencies).
     // These duplicates are removed when inserting them as keys.
-    private LinkedHashMap elements = new LinkedHashMap();
+    private LinkedHashMap<String, String> elements = new LinkedHashMap<String, String>();
 
-    public HashMap getElements() {
+    public HashMap<String, String> getElements() {
         return elements;
     }
 
-    public void setElements(LinkedHashMap elements) {
+    public void setElements(LinkedHashMap<String, String> elements) {
         this.elements = elements;
     }
 

@@ -3,7 +3,8 @@ package com.genomen.reporter;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.PrintStream;
-import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.lang.StringEscapeUtils;
+
 
 /**
  * Interface for objects that can be presented as rows in a table

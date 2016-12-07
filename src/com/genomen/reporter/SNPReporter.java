@@ -69,7 +69,7 @@ public class SNPReporter extends Reporter {
     private void addTraitTables( IndividualEntry individualEntry, String language, Results results) {
 
         HashMap<String, List<SNPResultEntity>> traitListMap = createTraitListMap(results.getResultEntities());
-        List<String> keyList = new LinkedList( traitListMap.keySet() );
+        List<String> keyList = new LinkedList<String>( traitListMap.keySet() );
         TraitDAO traitDAO = DAOFactory.getDAOFactory().getTraitDAO();
 
         TraitTable traits = new TraitTable(TABLE_HEADERS, TABLE_HEADER_DESCRIPTIONS, TABLE_TITLE);

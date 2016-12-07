@@ -44,7 +44,7 @@ public class XMLImporter {
         //Store all tables listed in the XML file into lists and place the list into a HashMap
         tablesToMap( xmlFilePath );
         //Create a list of all unique table names present in the XML file
-        tupleNameList = new LinkedList( tupleListMap.keySet() );
+        tupleNameList = new LinkedList<String>( tupleListMap.keySet() );
   
         while ( !tupleNameList.isEmpty() ) {
 

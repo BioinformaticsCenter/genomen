@@ -4,7 +4,7 @@ import com.genomen.utils.StringUtils;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.util.logging.Level;
-import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.log4j.Logger;
 
 

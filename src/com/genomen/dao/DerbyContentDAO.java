@@ -496,7 +496,7 @@ public class DerbyContentDAO extends DerbyDAO implements ContentDAO {
 
     public Hashtable<String, String[]> getForeignKeyValues(String schemaName, String tableName, boolean ignorePrimaryKeys ) {
 
-        Hashtable referencetable = new Hashtable();
+        Hashtable<String, String[]> referencetable = new Hashtable<String, String[]>();
         Connection connection = null;
 
         try {

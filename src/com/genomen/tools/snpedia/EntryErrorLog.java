@@ -11,13 +11,13 @@ import java.util.Set;
  */
 public class EntryErrorLog {
 
-    private HashMap entryErrors = new HashMap();
+    private HashMap<String,String> entryErrors = new HashMap<String, String>();
 
-    public HashMap getEntryErrors() {
+    public HashMap<String, String> getEntryErrors() {
         return entryErrors;
     }
 
-    public void setEntryErrors(HashMap entryErrors) {
+    public void setEntryErrors(HashMap<String, String> entryErrors) {
         this.entryErrors = entryErrors;
     }
 

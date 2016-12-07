@@ -43,7 +43,7 @@ public class Analyses {
      */
     public List<String> getAnalyzationLogics() {
 
-        return new ArrayList( availableAnalyses.keySet() );
+        return new ArrayList<String>( availableAnalyses.keySet() );
 
     }
 

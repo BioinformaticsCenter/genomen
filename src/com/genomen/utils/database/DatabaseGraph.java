@@ -43,7 +43,7 @@ public class DatabaseGraph {
      */
     public boolean allNodesProcessed() {
 
-        LinkedList<TableNode> tableNodes = new LinkedList( databaseGraph.values() );
+        LinkedList<TableNode> tableNodes = new LinkedList<TableNode>( databaseGraph.values() );
 
         for ( int i = 0; i < tableNodes.size(); i++) {
 

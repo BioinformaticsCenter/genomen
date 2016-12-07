@@ -8,7 +8,8 @@ import java.nio.charset.CharacterCodingException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
-import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.lang.StringEscapeUtils;
+
 
 /**
  *
@@ -143,7 +144,7 @@ public class GenOmenExporter {
      */
     public static Set<String> getSnpIds(ArrayList<Genotype> genotypes) {
 
-        Set snpIds = new HashSet<String>();
+        Set<String> snpIds = new HashSet<String>();
 
         for (Genotype genotype : genotypes) {
             snpIds.add(genotype.getSnp());

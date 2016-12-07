@@ -85,7 +85,7 @@ public class VCFReader {
      * @return a list of INFO entries.
      */
     public List<VCFInfo> getInfoList() {
-        return new ArrayList(info.values());
+        return new ArrayList<VCFInfo>(info.values());
     }
     
     /**
@@ -102,7 +102,7 @@ public class VCFReader {
      * @return a list of format entries
      */
     public List<VCFFormat> getFormatList() {
-        return new ArrayList(format.values());
+        return new ArrayList<VCFFormat>(format.values());
     }
     
     /**
@@ -119,7 +119,7 @@ public class VCFReader {
      * @return a list of FILTER entries.
      */
     public List<VCFFilter> getFilterList() {
-        return new ArrayList(filter.values());
+        return new ArrayList<VCFFilter>(filter.values());
     }
     
     /**
@@ -136,7 +136,7 @@ public class VCFReader {
      * @return a list of ALT entries.
      */
     public List<VCFAlt> getAltList() {
-        return new ArrayList(alt.values());
+        return new ArrayList<VCFAlt>(alt.values());
     }
     
     /**
@@ -153,7 +153,7 @@ public class VCFReader {
      * @return a list of contigs.
      */
     public List<String> getContigList() {
-        return new ArrayList(contigs.values());
+        return new ArrayList<String>(contigs.values());
     }
     
     /**
@@ -170,7 +170,7 @@ public class VCFReader {
      * @return a list of pedigrees.
      */
     public List<String> getPedigreeList() {
-        return new ArrayList(pedigree.values());
+        return new ArrayList<String>(pedigree.values());
     }
     
     /**

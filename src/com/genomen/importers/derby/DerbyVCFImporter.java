@@ -272,7 +272,7 @@ public class DerbyVCFImporter extends DerbySNPImporter implements Importer{
     }
     
     class Alleles {
-        private List<String> sequences = new ArrayList();
+        private List<String> sequences = new ArrayList<String>();
         private String phased = "";
         
         public Alleles( String phased) {

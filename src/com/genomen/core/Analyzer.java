@@ -32,7 +32,7 @@ public class Analyzer {
         TaskDAO taskDAO = DAOFactory.getDAOFactory().getTaskDAO();
 
         //Create a list of requested analyses that match the list of actual available analyses.
-        List performableAnalyses = createPerformableAnalysisList(analysisRequest);
+        List<Analysis> performableAnalyses = createPerformableAnalysisList(analysisRequest);
         analysisRequest.changeState( TaskState.LOADING_DATASETS );
         //Create the analysis task to contain and faciliate the exchange of analysis related data.
         AnalysisTask analysisTask = createAnalysisTask(analysisRequest);
