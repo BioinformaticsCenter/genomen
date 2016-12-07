@@ -37,29 +37,32 @@ Command: -o <filename> -i <file path>,<format>,<id>
 	Example: -persist
 	Default: Datasets will be removed from the database after the analysis is completed.
 
-Command: -destroy-db
+Command: --destroy-db
 Function: Clears the database
-Example: -destroy-db
+Example: --destroy-db
 
-Command: -create-db <SQL statement file>
+Command: --create-db <SQL statement file>
 Function: Creates a new databased using the SQL statements given as a parameter, overwriting the original database.
-Example: -create-db SQLCommands.txt
+Example: --create-db SQLCommands.txt
 
-Command: -import-db <database XML-file>
+Command: --import-db <database XML-file>
 Function: Imports the data in the XML file given as a parameter to corresponding tables in the database.
-Example: -import GenOmen.xml
+Example: --import GenOmen.xml
 
-Command: -export <file name>
+Command: --export <file name>
 Function: Exports the contents of the database into a XML file.
-Example: -export ExportedDatabase.xml
+Example: --export ExportedDatabase.xml
 
-Command: -template <template name>
+Command: --template <template name>
 Function: Creates a template of the database.
-Example: -template TestTemplate.xml
+Example: --template TestTemplate.xml
 
-Command: -list
-Function: Lists all the samples and associated data currently stored in the database.
-Example: -list
+Command: --list [options]
+Function: Lists contents of the database. If no options are specified, all the content is listed
+Options: 
+        -d Lists all samples stored in the database
+        -r Lists all rules stored in the database
+Example: --list dr
 
 Command: -remove-samples -s <sample id 1>,...,<sample id n>
 Function: Removes specified samples and all associated data from the database.
