@@ -1,5 +1,6 @@
 package com.genomen.ui.cli;
 
+import com.genomen.analyses.snp.Rule;
 import com.genomen.core.AnalysisExecutor;
 import com.genomen.utils.database.SchemaTruncator;
 import com.genomen.core.AnalysisRequest;
@@ -9,6 +10,8 @@ import com.genomen.core.Sample;
 import com.genomen.core.TaskState;
 import com.genomen.dao.DAOFactory;
 import com.genomen.dao.DataSetDAO;
+import com.genomen.dao.RuleDAO;
+import com.genomen.dao.TraitDAO;
 import com.genomen.importers.Importer;
 import com.genomen.importers.ImporterException;
 import com.genomen.importers.ImporterFactory;
@@ -69,6 +72,9 @@ public class Genomen implements Observer {
     
     private static final String MESSAGE_NO_DATASETS_IMPORTED = "No datasets stored.";
     private static final String MESSAGE_LISTING_DATASETS = "Listing currently stored datasets:";
+  
+    private static final String MESSAGE_NO_RULES_IMPORTED = "No rules stored.";
+    private static final String MESSAGE_LISTING_RULES = "Listing currently stored rules:";    
     
     private static final String MESSAGE_REMOVING_SAMPLES = "Removing samples...";
     private static final String MESSAGE_SAMPLES_TO_REMOVE = "Samples to be removed: "; 
@@ -151,8 +157,15 @@ public class Genomen implements Observer {
             XMLTemplateCreator.createXMLTemplate(Configuration.getConfiguration().getDatabaseSchemaName(), ArgumentProcessor.getTemplateFile(args));  
             System.out.println(MESSAGE_TEMPLATE_CREATED);              
         }
-        if ( ArgumentProcessor.datasetListingRequired(args)) {
-            listDatasets(); 
+        if ( ArgumentProcessor.listingRequired(args)) {
+            boolean[] listings = ArgumentProcessor.getRequiredListings(args);
+            if ( listings[0] ) {
+                listDatasets();           
+            }
+            if (listings[3] ) {
+                listRules();
+            }
+
         } 
         if ( ArgumentProcessor.sampleRemovalRequired(args)) {
             removeSamples(args);
@@ -293,24 +306,48 @@ public class Genomen implements Observer {
     
     private void listDatasets() {
         
+        System.out.println(MESSAGE_LISTING_DATASETS);      
         DataSetDAO datasetDAO = DAOFactory.getDAOFactory().getDataSetDAO();
-        List<Sample> individuals = datasetDAO.getIndividuals();
-        System.out.println(MESSAGE_LISTING_DATASETS); 
-        if ( individuals.isEmpty() ) {
+        List<Sample> samples = datasetDAO.getSamples();
+
+        if ( samples.isEmpty() ) {
             System.out.println(MESSAGE_NO_DATASETS_IMPORTED);
         }
         else { 
-            for ( Sample individual : individuals ) {
-                System.out.print( individual.getId() + "\t");
-                List<String> dataTypes = datasetDAO.getDataTypes(individual.getId());
+            for ( Sample sample : samples ) {
+                System.out.print( sample.getId() + "\t");
+                List<String> dataTypes = datasetDAO.getDataTypes(sample.getId());
                 for ( String type: dataTypes) {
                     System.out.print(type+"\t");
                 }
                 System.out.print("\n");
             }
-            System.out.println("Total: " + individuals.size() + " samples");
+            System.out.println("Total: " + samples.size() + " samples");
         }    
     }
+    
+    private void listRules() {
+        
+        System.out.println(MESSAGE_LISTING_RULES);      
+        RuleDAO ruleDAO = DAOFactory.getDAOFactory().getRuleDAO();
+        TraitDAO traitDAO = DAOFactory.getDAOFactory().getTraitDAO();
+        List<Rule> rules = ruleDAO.getRules(true);
+
+        if ( rules.isEmpty() ) {
+            System.out.println(MESSAGE_NO_RULES_IMPORTED);
+        }
+        else { 
+            for ( Rule rule : rules ) {
+                System.out.print(rule.getId() + "\t");                 
+                String traitName = traitDAO.getTraitName(rule.getTraitSymbolicName(), Configuration.getConfiguration().getLanguage());
+                System.out.print(traitName + "\t");    
+                String traitDescription = traitDAO.getShortDescription(rule.getTraitSymbolicName(), Configuration.getConfiguration().getLanguage());
+                System.out.print(traitDescription + "\t");                  
+                System.out.print("\n");
+            }
+            System.out.println("Total: " + rules.size() + " rules");
+        }    
+    }    
     
     private void removeSamples( String[] args ) throws InvalidCLIArgumentException {
         
@@ -318,7 +355,7 @@ public class Genomen implements Observer {
         List<String> samples = ArgumentProcessor.parseRequiredSamples(args);
      
         if ( samples.isEmpty()) {
-            List<Sample> allSamples = datasetDAO.getIndividuals(); 
+            List<Sample> allSamples = datasetDAO.getSamples(); 
             if (samples.size() > 0) {
                 System.out.println(MESSAGE_REMOVING_ALL_SAMPLES);   
                 System.out.println(MESSAGE_SAMPLES_TO_REMOVE);
@@ -331,7 +368,7 @@ public class Genomen implements Observer {
         else {
             List<String> validSamples = new ArrayList<String>();
             for ( String id : samples) {
-                Sample sample = datasetDAO.getIndividual(id);
+                Sample sample = datasetDAO.getSample(id);
                 if ( sample == null ) {
                     System.out.println(MESSAGE_NO_SUCH_SAMPLE + id ); 
                 }
@@ -350,7 +387,7 @@ public class Genomen implements Observer {
 
         }
         
-        datasetDAO.removeIndividuals(samples);
+        datasetDAO.removeSamples(samples);
         
         switch (samples.size()) {
             case 0:

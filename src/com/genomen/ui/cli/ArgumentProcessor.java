@@ -18,6 +18,8 @@ import java.util.regex.Pattern;
  */
 public class ArgumentProcessor {
 
+    private static final String COMMAND_GENERIC = "^[-]+[\\w]+";
+    
     private static final String COMMAND_OUTPUT = "-o";
     private static final String VALID_OUTPUT_REGEXP = "^[\\/\\w]+";
     private static final String VALID_OUTPUT_PATH_REGEXP = "^[\\/]?([\\w_]+[\\/])*";
@@ -61,7 +63,12 @@ public class ArgumentProcessor {
     
     private static final String COMMAND_PERSIST_DATASETS = "--persist";
     
-    private static final String COMMAND_LIST_DATASETS = "--list";    
+    private static final String COMMAND_LIST = "--list";  
+    private static final String VALID_LIST_REGEXP = "[svdr]+";
+    private static final String VALID_LIST_SAMPLES = "s";   
+    private static final String VALID_LIST_DATASETS = "d";     
+    private static final String VALID_LIST_VARIANTS = "v";    
+    private static final String VALID_LIST_RULES = "r";       
     
     private static final String ERROR_MESSAGE = "Invalid command syntax";
 
@@ -145,7 +152,7 @@ public class ArgumentProcessor {
                 databaseExportRequired(args) ||
                 databaseImportRequired(args) || 
                 databaseTemplateRequired(args) ||
-                datasetListingRequired(args) ||
+                listingRequired(args) ||
                 sampleRemovalRequired(args) ||
                 helpRequired( args ) ||
                 taskRequired(args)
@@ -339,6 +346,22 @@ public class ArgumentProcessor {
 
         return index;
     }
+    
+    private static boolean hasParameters(String command, String[] parameters) {
+        
+        int index = findParameterIndex( command, parameters );    
+        
+        //Last parameter cannot have arguments
+        if ( index >= parameters.length) {
+            return false;
+        }
+        //If the next argument is another command, the current argument does not have parameters
+        if ( parameters[index+1].matches(COMMAND_GENERIC)) {
+            return false;
+        }
+        return true;
+        
+    }
 
     private static boolean validArgument( String[] args, int index, String regexp ) {
 
@@ -461,12 +484,53 @@ public class ArgumentProcessor {
      * @param args CL arguments
      * @return <code>true</code> if listing of the datasets is required, <code>false</code> otherwise.
      */
-    public static boolean datasetListingRequired( String[] args ) {
-        if (findParameterIndex(COMMAND_LIST_DATASETS, args ) >=  0) {
+    public static boolean listingRequired( String[] args ) {
+        if (findParameterIndex(COMMAND_LIST, args ) >=  0) {
             return true;
         }
         return false;   
-    }   
+    }  
+    
+    public static boolean[] getRequiredListings( String[] args ) throws InvalidCLIArgumentException {
+        
+        /*
+        0 samples
+        1 datasets
+        2 variants
+        4 variants        
+        */
+        boolean listings[] = new boolean[4];
+        
+        //If the command has no parameters, list everything
+        if ( !hasParameters(COMMAND_LIST, args)) {
+            listings[0] = true;
+            listings[1] = true;
+            listings[2] = true;
+            listings[3] = true;  
+            return listings;
+        }
+        
+        String listingParameters = findParameter( COMMAND_LIST, VALID_LIST_REGEXP, args );
+        
+        if ( listingParameters == null ) {
+            throw new InvalidCLIArgumentException(ERROR_MESSAGE);
+        }
+        
+        if ( listingParameters.contains(VALID_LIST_SAMPLES) ) {
+            listings[0] = true;
+        }
+        if ( listingParameters.contains(VALID_LIST_DATASETS) ) {
+            listings[1] = true;
+        }  
+        if ( listingParameters.contains(VALID_LIST_VARIANTS) ) {
+            listings[2] = true;
+        } 
+        if ( listingParameters.contains(VALID_LIST_RULES) ) {
+            listings[3] = true;
+        }         
+        
+        return listings;
+    }
     
     /**
      * Is removal of one or more samples required.

@@ -150,7 +150,7 @@ public class DerbyDataSetDAO extends DerbyDAO implements DataSetDAO {
     }
     
     @Override
-    public void removeIndividuals( List<String> individualIDs ) {
+    public void removeSamples( List<String> individualIDs ) {
         
         Connection connection = null;
      
@@ -199,7 +199,7 @@ public class DerbyDataSetDAO extends DerbyDAO implements DataSetDAO {
         }      
     }    
     
-    public Sample getIndividual( String individualID ) {
+    public Sample getSample( String individualID ) {
         
         Connection connection = null;
         Sample individual = null;
@@ -283,7 +283,7 @@ public class DerbyDataSetDAO extends DerbyDAO implements DataSetDAO {
     }
 
     @Override
-    public List<Sample> getIndividuals() {
+    public List<Sample> getSamples() {
         
         List<Sample> individualList = new ArrayList<Sample>();
         

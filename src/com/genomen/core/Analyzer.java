@@ -157,9 +157,9 @@ public class Analyzer {
             for ( String id : analysisRequest.getSamples()) {
                 
                 taskDAO.addIndividual(Configuration.getConfiguration().getDatabaseTempSchemaName(), taskID, id);
-                Sample individual = datasetDAO.getIndividual(id);
+                Sample individual = datasetDAO.getSample(id);
                 if ( individual != null) {
-                    individuals.add( datasetDAO.getIndividual(id) );         
+                    individuals.add( datasetDAO.getSample(id) );         
                 }
 
             }

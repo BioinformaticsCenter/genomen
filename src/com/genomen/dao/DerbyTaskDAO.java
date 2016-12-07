@@ -183,7 +183,7 @@ public class DerbyTaskDAO extends DerbyDAO implements TaskDAO {
             while ( resultSet.next() ) {
                 individuals.add( resultSet.getString("INDIVIDUAL_ID"));
             }
-            datasetDAO.removeIndividuals(individuals);
+            datasetDAO.removeSamples(individuals);
 
             statement.close();
 
