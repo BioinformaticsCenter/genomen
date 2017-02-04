@@ -7,12 +7,12 @@ package com.genomen.readers.vcfreader;
  */
 public class VCFInfo extends VCFEntry{
     
-    private final int number;
+    private final String number;
     private final String description;
     private final String source;
     private final String version;
     
-    public VCFInfo( String id, int number, String type, String description, String source, String version) {
+    public VCFInfo( String id, String number, String type, String description, String source, String version) {
         
         super(id, type);
         this.number = number;
@@ -25,7 +25,7 @@ public class VCFInfo extends VCFEntry{
     /**Gets the number of expected values for this INFO type.
      * @return the number of expected values
      */
-    public int getNumber() {
+    public String getNumber() {
         return number;
     }
 

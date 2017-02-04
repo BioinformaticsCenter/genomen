@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
@@ -26,7 +27,7 @@ public class VCFReader {
     private static final Pattern METADATA_ROW_REGEXP = Pattern.compile("^##.+");
     private static final Pattern HEADER_ROW_REGEXP = Pattern.compile("^#CHROM\\tPOS\\tID\\tREF\\tALT\\tQUAL\\tFILTER\\tINFO(\\tFORMAT)?(\\t[a-zA-Z0-9_]+)*");
     private static final Pattern VALID_FORMAT_REGEXP = Pattern.compile("^##fileformat=VCFv.*");
-    private static final Pattern INFO_REGEXP = Pattern.compile("^##INFO=<ID=[a-zA-Z0-9_]+,Number=[0-9.]+,Type=[a-zA-Z]+,Description=\".+\"(,Source=[a-zA-Z0-9_:/]+)?(,Version=[a-zA-Z0-9.]+)?>");
+    private static final Pattern INFO_REGEXP = Pattern.compile("^##INFO=<ID=[a-zA-Z0-9_]+,Number=[0-9.ARG]+,Type=[a-zA-Z]+,Description=\".+\"(,Source=[a-zA-Z0-9_:/]+)?(,Version=[a-zA-Z0-9.]+)?>");
     private static final Pattern FORMAT_REGEXP = Pattern.compile("^##FORMAT=<ID=[a-zA-Z0-9_]+,Number=[0-9]+,Type=[a-zA-Z]+,Description=\".+\">");
     private static final Pattern FILTER_REGEXP = Pattern.compile("^##FILTER=<ID=[a-zA-Z0-9_]+,Description=\".+\">");
     private static final Pattern ALT_REGEXP = Pattern.compile("^##FILTER=<ID=[a-zA-Z0-9_]+,Description=\".+\">");    
@@ -47,7 +48,7 @@ public class VCFReader {
     private static final Pattern REGEXP_FLOAT = Pattern.compile("[.]|[0-9]+|([0-9]+[.][0-9]+)");
     private static final Pattern REGEXP_STRING = Pattern.compile("[a-zA-Z0-9|./]+");
     private static final Pattern REGEXP_INTEGER = Pattern.compile("[0-9.]+");
-    private static final Pattern REGEXP_CHAR = Pattern.compile("[a-zA-Z.]");
+    private static final Pattern REGEXP_CHAR = Pattern.compile("[a-zA-Z.]");   
     
     private static final String ID = "ID";
     private static final String TYPE = "Type";
@@ -275,31 +276,28 @@ public class VCFReader {
             //Process all metadata rows.
             while ( isMetadataRow(nextLine)) {
                 
-                String[] split = nextLine.split("=<");
+                String preprocessedMetadata = preprocessMetadataRow(nextLine);
+
                 Map<String, String> valueMap;
                 
                 //Try matching the current row to known metadata definitions.
                 if ( INFO_REGEXP.matcher(nextLine).matches()) {
-                    valueMap = extractValueMap(split[1]);
+                    valueMap = extractValueMap(preprocessedMetadata);
                     
                     //If the number attribute does not have a definite value use -1 to present this.
                     String numberString = valueMap.get(NUMBER);
-                    int numberNumeric = -1;
-                    if (!numberString.equals(ANY_VALUE)) {
-                        numberNumeric = Integer.parseInt( valueMap.get(NUMBER));
-                    }
-                    info.put(valueMap.get(ID), new VCFInfo(valueMap.get(ID), numberNumeric, valueMap.get(TYPE), valueMap.get(DESCRIPTION), valueMap.get(SOURCE), valueMap.get(VERSION)));
+                    info.put(valueMap.get(ID), new VCFInfo(valueMap.get(ID), numberString, valueMap.get(TYPE), valueMap.get(DESCRIPTION), valueMap.get(SOURCE), valueMap.get(VERSION)));
                 }
                 if ( FORMAT_REGEXP.matcher(nextLine).matches()) {
-                    valueMap = extractValueMap(split[1]);
+                    valueMap = extractValueMap(preprocessedMetadata);
                     format.put(valueMap.get(ID), new VCFFormat(valueMap.get(ID), valueMap.get(NUMBER), valueMap.get(TYPE), valueMap.get(DESCRIPTION)) );
                 }
                 if (FILTER_REGEXP.matcher(nextLine).matches()) {
-                    valueMap = extractValueMap(split[1]);
+                    valueMap = extractValueMap(preprocessedMetadata);
                     filter.put(valueMap.get(ID), new VCFFilter(valueMap.get(ID), valueMap.get(DESCRIPTION) ));
                 }  
                 if (ALT_REGEXP.matcher(nextLine).matches()) {
-                    valueMap = extractValueMap(split[1]);
+                    valueMap = extractValueMap(preprocessedMetadata);
                     alt.put(valueMap.get(ID), new VCFAlt(valueMap.get(ID), valueMap.get(DESCRIPTION) ));     
                 }
                 if (CONTIG_REGEXP.matcher(nextLine).matches()) {
@@ -310,15 +308,15 @@ public class VCFReader {
                     } 
                 }
                 if (PEDIGREE_REGEXP.matcher(nextLine).matches()) {
-                    valueMap = extractValueMap(split[1]);
+                    valueMap = extractValueMap(preprocessedMetadata);
                     pedigree.putAll(valueMap);
                 }
                 if (PEDIGREE_DB_REGEXP.matcher(nextLine).matches()) {
-                    String url = split[1].replaceAll("[<>]", "");
+                    String url = preprocessedMetadata.replaceAll("[<>]", "");
                     pedigreeDB = url;
                 }       
                 if (ASSEMBLY_REGEXP.matcher(nextLine).matches()) {
-                    String url = split[1].replaceAll("[<>]", "");
+                    String url = preprocessedMetadata.replaceAll("[<>]", "");
                     assemblyURL = url;        
                 }
                 nextLine = readNext();
@@ -352,16 +350,38 @@ public class VCFReader {
         return false;
     }
     
+    private String preprocessMetadataRow(String unprocessedMetadataRow) throws VCFException {
+        //Split the string to variable name and metadata by the first occurence of equal sign
+        String[] split = unprocessedMetadataRow.split("=",2); 
+        if (split.length < 2 ) {
+            throw new VCFException(VCFException.INVALID_SYNTAX, currentRow);  
+        }
+        String preprocessedMetadata = "";
+
+        //Remove the last greater than sign from the row
+        int greaterThanIndex = split[1].lastIndexOf(">");
+        if ( greaterThanIndex >= 0 ) {
+            preprocessedMetadata = split[1].substring(0, greaterThanIndex);
+        }   
+        
+        //Remove the first less than sign from the row 
+        int lessThanIndex = preprocessedMetadata.indexOf("<");
+        if ( lessThanIndex >= 0 && preprocessedMetadata.length() > 1) {        
+            preprocessedMetadata = preprocessedMetadata.substring(lessThanIndex+1);
+            
+        }        
+        return preprocessedMetadata;
+    }
+    
     //Extract key-value pairs from the given metadata line and return them as a map.
     private Map<String, String> extractValueMap( String row ) throws VCFException {
     
         HashMap<String, String> keyValuePairs = new HashMap<String, String>();
-        
-        row = row.replaceAll("[<>]", "");
-        String[] tuples = row.split(VALUE_SEPARATOR);
+                            
+        String[] tuples = row.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1);
                
-        for( int i = 0; i < tuples.length; i++ ) {
-            String[] split = tuples[i].split(KEY_VALUE_SEPARATOR);
+        for (String tuple : tuples) {
+            String[] split = tuple.split(KEY_VALUE_SEPARATOR);
             if (split.length < 2) {
                 throw new VCFException(VCFException.INVALID_SYNTAX, currentRow);
             }             
@@ -369,7 +389,7 @@ public class VCFReader {
         }
         return keyValuePairs;
     }
-    
+       
     //Extract key-value pairs from the given row and return them as an array.
     private String[][] extractKeyValuePairs( String row ) throws VCFException {
         
