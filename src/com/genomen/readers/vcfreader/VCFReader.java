@@ -385,7 +385,8 @@ public class VCFReader {
             if (split.length < 2) {
                 throw new VCFException(VCFException.INVALID_SYNTAX, currentRow);
             }             
-            keyValuePairs.put(split[0], split[1]);
+            String value = split[1].replaceAll("\"", "");
+            keyValuePairs.put(split[0], value);
         }
         return keyValuePairs;
     }
