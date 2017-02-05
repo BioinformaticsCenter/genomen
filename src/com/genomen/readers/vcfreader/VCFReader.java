@@ -33,7 +33,7 @@ public class VCFReader {
     private static final Pattern ALT_REGEXP = Pattern.compile("^##FILTER=<ID=[a-zA-Z0-9_]+,Description=\".+\">");    
     private static final Pattern ASSEMBLY_REGEXP = Pattern.compile("^##assembly=[a-zA-Z0-9.:/]+");
     private static final Pattern CONTIG_REGEXP = Pattern.compile("^##contig=<ID=[a-zA-Z0-9_]+,URL=[a-zA-Z0-9./:]+(,ID=[a-zA-Z0-9_]+,URL=[a-zA-Z0-9./:]+)*");
-    private static final Pattern PEDIGREE_REGEXP = Pattern.compile("^##PEDIGREE=<([a-zA-Z0-9_]+=[\\d\\w]+)+>");
+    private static final Pattern PEDIGREE_REGEXP = Pattern.compile("^##PEDIGREE=<([a-zA-Z0-9_-]+=[\\d\\w-]+)(,[a-zA-Z0-9_-]+=[\\d\\w-]+)*>");
     private static final Pattern PEDIGREE_DB_REGEXP = Pattern.compile("^##pedigreeDB=[a-zA-Z0-9./:]+");
     private static final Pattern COMMON_COLUMNS_PATTERN = Pattern.compile(
                                                                             "^[a-zA-Z0-9_]+" // CHROM
