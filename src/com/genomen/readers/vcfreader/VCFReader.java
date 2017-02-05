@@ -31,7 +31,7 @@ public class VCFReader {
     private static final Pattern FORMAT_REGEXP = Pattern.compile("^##FORMAT=<ID=[a-zA-Z0-9_]+,Number=[0-9]+,Type=[a-zA-Z]+,Description=\".+\">");
     private static final Pattern FILTER_REGEXP = Pattern.compile("^##FILTER=<ID=[a-zA-Z0-9_]+,Description=\".+\">");
     private static final Pattern ALT_REGEXP = Pattern.compile("^##FILTER=<ID=[a-zA-Z0-9_]+,Description=\".+\">");    
-    private static final Pattern ASSEMBLY_REGEXP = Pattern.compile("^##assembly=[a-zA-Z0-9./]+");
+    private static final Pattern ASSEMBLY_REGEXP = Pattern.compile("^##assembly=[a-zA-Z0-9.:/]+");
     private static final Pattern CONTIG_REGEXP = Pattern.compile("^##contig=<ID=[a-zA-Z0-9_]+,URL=[a-zA-Z0-9./:]+(,ID=[a-zA-Z0-9_]+,URL=[a-zA-Z0-9./:]+)*");
     private static final Pattern PEDIGREE_REGEXP = Pattern.compile("^##PEDIGREE=<([a-zA-Z0-9_]+=[\\d\\w]+)+>");
     private static final Pattern PEDIGREE_DB_REGEXP = Pattern.compile("^##pedigreedb=<[a-zA-Z0-9./:]+>");
@@ -278,7 +278,7 @@ public class VCFReader {
                 
                 String preprocessedMetadata = preprocessMetadataRow(nextLine);
 
-                Map<String, String> valueMap;
+                Map<String, String> valueMap = null;
                 
                 //Try matching the current row to known metadata definitions.
                 if ( INFO_REGEXP.matcher(nextLine).matches()) {
@@ -312,12 +312,11 @@ public class VCFReader {
                     pedigree.putAll(valueMap);
                 }
                 if (PEDIGREE_DB_REGEXP.matcher(nextLine).matches()) {
-                    String url = preprocessedMetadata.replaceAll("[<>]", "");
-                    pedigreeDB = url;
+                    pedigreeDB = preprocessedMetadata;
                 }       
                 if (ASSEMBLY_REGEXP.matcher(nextLine).matches()) {
-                    String url = preprocessedMetadata.replaceAll("[<>]", "");
-                    assemblyURL = url;        
+
+                    assemblyURL = preprocessedMetadata;        
                 }
                 nextLine = readNext();
             }
@@ -356,12 +355,12 @@ public class VCFReader {
         if (split.length < 2 ) {
             throw new VCFException(VCFException.INVALID_SYNTAX, currentRow);  
         }
-        String preprocessedMetadata = "";
+        String preprocessedMetadata = split[1];
 
         //Remove the last greater than sign from the row
         int greaterThanIndex = split[1].lastIndexOf(">");
         if ( greaterThanIndex >= 0 ) {
-            preprocessedMetadata = split[1].substring(0, greaterThanIndex);
+            preprocessedMetadata = preprocessedMetadata.substring(0, greaterThanIndex);
         }   
         
         //Remove the first less than sign from the row 
