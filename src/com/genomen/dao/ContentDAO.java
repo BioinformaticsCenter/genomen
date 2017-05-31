@@ -62,8 +62,9 @@ public interface ContentDAO {
      * @param tableName table name
      * @param attributeNameList attributes for which values are to be added
      * @param valueList values for the attributes of the tuple to be added
+     * @return <code>true</code> if tuple was successfully inserted, <code>false</code> otherwise
      */
-    public abstract void addTuple( String schema, String tableName, String[] attributeNameList, String[] valueList );
+    public abstract boolean addTuple( String schema, String tableName, String[] attributeNameList, String[] valueList );
        
     /**
      * Gets the attribute type names of a specific table

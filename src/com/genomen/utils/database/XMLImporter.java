@@ -196,7 +196,7 @@ public class XMLImporter {
             for ( int i = 0; i < tupleList.size(); i++) {
                 Tuple tuple = tupleList.get(i);
                 contentDAO.addTuple(tuple.getSchemaName(), tuple.getTableName(), tuple.getAttributeNames(), tuple.getValues());
-          
+                
             }
         }
     }

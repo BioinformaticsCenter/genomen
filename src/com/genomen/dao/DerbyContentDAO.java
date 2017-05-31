@@ -28,7 +28,7 @@ public class DerbyContentDAO extends DerbyDAO implements ContentDAO {
             connection = DerbyDAOFactory.createConnection();
         }
         catch (Exception ex) {
-            Logger.getLogger( DerbyContentDAO.class ).debug(ex);
+            Logger.getLogger( DerbyContentDAO.class ).error(ex);
             return rows;
         }
 
@@ -75,7 +75,7 @@ public class DerbyContentDAO extends DerbyDAO implements ContentDAO {
             connection = DerbyDAOFactory.createConnection();
         }
         catch (Exception ex) {
-            Logger.getLogger( DerbyContentDAO.class ).debug(ex);
+            Logger.getLogger( DerbyContentDAO.class ).error(ex);
             return attributeNames;
         }
 
@@ -113,7 +113,7 @@ public class DerbyContentDAO extends DerbyDAO implements ContentDAO {
             connection = DerbyDAOFactory.createConnection();
         }
         catch (Exception ex) {
-            Logger.getLogger( DerbyContentDAO.class ).debug(ex);
+            Logger.getLogger( DerbyContentDAO.class ).error(ex);
             return primaryKeys;
         }
 
@@ -153,7 +153,7 @@ public class DerbyContentDAO extends DerbyDAO implements ContentDAO {
             connection = DerbyDAOFactory.createConnection();
         }
         catch (Exception ex) {
-            Logger.getLogger( DerbyContentDAO.class ).debug(ex);
+            Logger.getLogger( DerbyContentDAO.class ).error(ex);
             return columnLengths;
         }
 
@@ -194,7 +194,7 @@ public class DerbyContentDAO extends DerbyDAO implements ContentDAO {
             connection = DerbyDAOFactory.createConnection();
         }
         catch (Exception ex) {
-            Logger.getLogger( DerbyContentDAO.class ).debug(ex);
+            Logger.getLogger( DerbyContentDAO.class ).error(ex);
             return tableNames;
         }
 
@@ -236,7 +236,7 @@ public class DerbyContentDAO extends DerbyDAO implements ContentDAO {
             connection = DerbyDAOFactory.createConnection();
         }
         catch (Exception ex) {
-            Logger.getLogger( DerbyContentDAO.class ).debug(ex);
+            Logger.getLogger( DerbyContentDAO.class ).error(ex);
             return attributeTypes;
         }
 
@@ -276,7 +276,7 @@ public class DerbyContentDAO extends DerbyDAO implements ContentDAO {
             connection = DerbyDAOFactory.createConnection();
         }
         catch (Exception ex) {
-            Logger.getLogger( DerbyContentDAO.class ).debug(ex);
+            Logger.getLogger( DerbyContentDAO.class ).error(ex);
             return attributeTypes;
         }
 
@@ -314,7 +314,7 @@ public class DerbyContentDAO extends DerbyDAO implements ContentDAO {
             connection = DerbyDAOFactory.createConnection();
         }
         catch (Exception ex) {
-            Logger.getLogger( DerbyContentDAO.class ).debug(ex);
+            Logger.getLogger( DerbyContentDAO.class ).error(ex);
             return;
         }
 
@@ -396,7 +396,7 @@ public class DerbyContentDAO extends DerbyDAO implements ContentDAO {
             connection = DerbyDAOFactory.createConnection();
         }
         catch (Exception ex) {
-            Logger.getLogger( DerbyContentDAO.class ).debug(ex);
+            Logger.getLogger( DerbyContentDAO.class ).error(ex);
             return;
         }
 
@@ -417,18 +417,18 @@ public class DerbyContentDAO extends DerbyDAO implements ContentDAO {
 
     }
 
-    public void addTuple(String schemaName, String tableName, String[] columNameArray, String[] valueArray ) {
+    public boolean addTuple(String schemaName, String tableName, String[] columNameArray, String[] valueArray ) {
 
         String columns = "";
         String values = "";
         Connection connection = null;
-
+        boolean success = true;
         try {
             connection = DerbyDAOFactory.createConnection();
         }
         catch (Exception ex) {
-            Logger.getLogger( DerbyContentDAO.class ).debug(ex);
-            return;
+            Logger.getLogger( DerbyContentDAO.class ).error(ex);
+            return false;
         }
 
         for ( int i = 0; i < columNameArray.length; i++ ) {
@@ -451,13 +451,13 @@ public class DerbyContentDAO extends DerbyDAO implements ContentDAO {
             statement.close();
         }
         catch (SQLException ex) {
-           System.out.println(ex);
-           Logger.getLogger( DerbyContentDAO.class ).error(ex);
+            success = false;
+            Logger.getLogger( DerbyContentDAO.class ).error(ex);
         }
         finally {
             closeConnection( connection );
         }
-        
+        return success;
     }
 
     public String[][] getTablesRefered( String schemaName, String tableName ) {
@@ -469,7 +469,7 @@ public class DerbyContentDAO extends DerbyDAO implements ContentDAO {
             connection = DerbyDAOFactory.createConnection();
         }
         catch (Exception ex) {
-            Logger.getLogger( DerbyContentDAO.class ).debug(ex);
+            Logger.getLogger( DerbyContentDAO.class ).error(ex);
             return tablesRefered.toArray( new String[0][0]);
         }
 
@@ -503,7 +503,7 @@ public class DerbyContentDAO extends DerbyDAO implements ContentDAO {
             connection = DerbyDAOFactory.createConnection();
         }
         catch (Exception ex) {
-            Logger.getLogger( DerbyContentDAO.class ).debug(ex);
+            Logger.getLogger( DerbyContentDAO.class ).error(ex);
             return referencetable;
         }
 
@@ -577,7 +577,7 @@ public class DerbyContentDAO extends DerbyDAO implements ContentDAO {
             connection = DerbyDAOFactory.createConnection();
         }
         catch (Exception ex) {
-            Logger.getLogger( DerbyContentDAO.class ).debug(ex);
+            Logger.getLogger( DerbyContentDAO.class ).error(ex);
             return false;
         }
 
@@ -604,7 +604,7 @@ public class DerbyContentDAO extends DerbyDAO implements ContentDAO {
             connection = DerbyDAOFactory.createConnection();
         }
         catch (Exception ex) {
-            Logger.getLogger( DerbyContentDAO.class ).debug(ex);
+            Logger.getLogger( DerbyContentDAO.class ).error(ex);
             return;
         }
 
@@ -631,7 +631,7 @@ public class DerbyContentDAO extends DerbyDAO implements ContentDAO {
             connection = DerbyDAOFactory.createConnection();
         }
         catch (Exception ex) {
-            Logger.getLogger( DerbyContentDAO.class ).debug(ex);
+            Logger.getLogger( DerbyContentDAO.class ).error(ex);
             return;
         }
 
@@ -657,7 +657,7 @@ public class DerbyContentDAO extends DerbyDAO implements ContentDAO {
             connection = DerbyDAOFactory.createConnection();
         }
         catch (Exception ex) {
-            Logger.getLogger( DerbyContentDAO.class ).debug(ex);
+            Logger.getLogger( DerbyContentDAO.class ).error(ex);
             return false;
         }
 
