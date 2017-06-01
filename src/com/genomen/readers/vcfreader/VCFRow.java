@@ -10,7 +10,7 @@ public class VCFRow {
  
     private final String chrom;
     private final int pos;
-    private final String id;
+    private final String[] ids;
     private final String[] ref;
     private final String[] alt;
     private final String quality;
@@ -19,10 +19,10 @@ public class VCFRow {
     private final String[] format;
     private final Map<String, String[]> genotypes;
     
-    public VCFRow( String chrom, int pos, String id, String ref[], String alt[], String quality, String[] filter, String[][] info, String[] format, Map<String, String[]> genotypes ) {
+    public VCFRow( String chrom, int pos, String[] ids, String ref[], String alt[], String quality, String[] filter, String[][] info, String[] format, Map<String, String[]> genotypes ) {
         this.chrom = chrom;   
         this.pos = pos;
-        this.id = id;
+        this.ids = ids;
         this.ref = ref;
         this.alt = alt;
         this.quality = quality;
@@ -49,8 +49,8 @@ public class VCFRow {
     /**Gets the ID column of this row.
      * @return the ID column
      */
-    public String getId() {
-        return id;
+    public String[] getIds() {
+        return ids;
     }
 
     /**Gets the REF column of this row.

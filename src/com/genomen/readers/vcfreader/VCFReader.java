@@ -446,7 +446,7 @@ public class VCFReader {
         //We can assume that the format for the first eight columns is verified.
         String chromosome = split[0];
         int position = Integer.parseInt(split[1]);
-        String id = split[2];
+        String[] ids = split[2].split(VALUE_SEPARATOR);
         String[] refValues = split[3].split(VALUE_SEPARATOR);
         String[] altValues = split[4].split(VALUE_SEPARATOR);
         String qualityValues = split[5];
@@ -482,7 +482,7 @@ public class VCFReader {
             genotypes = parseGenotypes(split, rowFormat);
         }        
         
-        return  new VCFRow( chromosome, position, id, refValues, altValues, qualityValues, filterValues, infoValues, rowFormat, genotypes);
+        return  new VCFRow( chromosome, position, ids, refValues, altValues, qualityValues, filterValues, infoValues, rowFormat, genotypes);
         
     }
     

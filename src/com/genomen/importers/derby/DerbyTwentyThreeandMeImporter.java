@@ -46,11 +46,11 @@ public class DerbyTwentyThreeandMeImporter extends DerbySNPImporter implements I
         
 
 
-        //Create Individual for the data presented in the file
+        //Create a Sample for the data presented in the file
         Sample individual = new Sample(individualID);  
         individualList.add(individual);
         
-        //Add individual to database
+        //Add sample to database
         List<String> individualIDs = new ArrayList<String>();
         individualIDs.add(individualID);
 

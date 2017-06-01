@@ -51,11 +51,13 @@ public class DerbyVCFImporter extends DerbySNPImporter implements Importer{
         vcfReader = new VCFReader();
         vcfReader.open(fileNames[0]);
         
-        //List avaialble samples and create an entry to the the list of individuals for each one.
+        //List available samples and create an entry to the the list of individuals for each one.
         List<String> sampleIDs = vcfReader.getSampleIDs();
         for ( String id : sampleIDs ) {
             individualList.add(new Sample(id));
         }
+        
+        insertIndividuals( sampleIDs );
 
         //Create tmp files for each individual 
         List<BufferedWriter> variantWriters = new ArrayList<BufferedWriter>();
@@ -138,44 +140,46 @@ public class DerbyVCFImporter extends DerbySNPImporter implements Importer{
         
         String chromosome = row.getChrom();
         int start = row.getPos();
-        String id = row.getId();
+        String[] ids = row.getIds();
         Alleles alleles = null;
-                
-        for ( int f = 0; f < row.getFormat().length; f++ ) {
-            
-            String formatName = row.getFormat()[f];
-            String genotype = row.getGenotypes().get(sampleID)[f];
+        //Write the variation separately for each id
+        for ( int i = 0; i < ids.length; i++)
 
-            //If the format is GT, write it to the list of variants
-            if ( formatName.equals(GENOTYPE)) {
-                alleles = extractAlleles( row.getRef(), row.getAlt(), genotype);
-                
-                HashMap<String, DataEntityAttributeValue> attributes = new HashMap<String, DataEntityAttributeValue>();
-                attributes.put(DerbySNPImporter.ID, new DataEntityAttributeValue(id) );
-                attributes.put(DerbySNPImporter.CHROMOSOME, new DataEntityAttributeValue(chromosome) );        
-                attributes.put(DerbySNPImporter.SEQUENCE_START, new DataEntityAttributeValue(start) );            
-                attributes.put(DerbySNPImporter.ALLELE, new DataEntityAttributeValue(alleles.toString()) );         
-                attributes.put(DerbySNPImporter.STRAND, new DataEntityAttributeValue(-1) );    
-                
-                String tuple = createTuple( variantIndexes.get(sampleID), attributes, DerbySNPImporter.VARIANT );
-                variantWriter.write(tuple);
-                variantWriter.newLine();
-                incrementIndex(variantIndexes, sampleID);
+            for ( int f = 0; f < row.getFormat().length; f++ ) {
+
+                String formatName = row.getFormat()[f];
+                String genotype = row.getGenotypes().get(sampleID)[f];
+
+                //If the format is GT, write it to the list of variants
+                if ( formatName.equals(GENOTYPE)) {
+                    alleles = extractAlleles( row.getRef(), row.getAlt(), genotype);
+
+                    HashMap<String, DataEntityAttributeValue> attributes = new HashMap<String, DataEntityAttributeValue>();
+                    attributes.put(DerbySNPImporter.ID, new DataEntityAttributeValue(ids[i]) );
+                    attributes.put(DerbySNPImporter.CHROMOSOME, new DataEntityAttributeValue(chromosome) );        
+                    attributes.put(DerbySNPImporter.SEQUENCE_START, new DataEntityAttributeValue(start) );            
+                    attributes.put(DerbySNPImporter.ALLELE, new DataEntityAttributeValue(alleles.toString()) );         
+                    attributes.put(DerbySNPImporter.STRAND, new DataEntityAttributeValue(-1) );    
+
+                    String tuple = createTuple( variantIndexes.get(sampleID), attributes, DerbySNPImporter.VARIANT );
+                    variantWriter.write(tuple);
+                    variantWriter.newLine();
+                    incrementIndex(variantIndexes, sampleID);
+                }
+                //Otherwise write it as additional variant related data
+                else {
+                    HashMap<String, DataEntityAttributeValue> attributes = new HashMap<String, DataEntityAttributeValue>();
+                    attributes.put(DerbySNPImporter.VARIANT_ID, new DataEntityAttributeValue(variantIndexes.get(sampleID)) );      
+                    attributes.put(DerbySNPImporter.NAME, new DataEntityAttributeValue(formatName) );          
+                    attributes.put(DerbySNPImporter.VALUE, new DataEntityAttributeValue(genotype) );           
+
+                    String tuple = createTuple( variantInfoIndexes.get(sampleID), attributes, DerbySNPImporter.VARIANT_INFO );
+                    infoWriter.write(tuple);
+                    infoWriter.newLine();
+                    incrementIndex(variantInfoIndexes, sampleID);     
+                }  
             }
-            //Otherwise write it as additional variant related data
-            else {
-                
-                HashMap<String, DataEntityAttributeValue> attributes = new HashMap<String, DataEntityAttributeValue>();
-                attributes.put(DerbySNPImporter.VARIANT_ID, new DataEntityAttributeValue(variantIndexes.get(sampleID)) );      
-                attributes.put(DerbySNPImporter.NAME, new DataEntityAttributeValue(formatName) );          
-                attributes.put(DerbySNPImporter.VALUE, new DataEntityAttributeValue(genotype) );           
-                
-                String tuple = createTuple( variantInfoIndexes.get(sampleID), attributes, DerbySNPImporter.VARIANT_INFO );
-                infoWriter.write(tuple);
-                infoWriter.newLine();
-                incrementIndex(variantInfoIndexes, sampleID);     
-            }  
-        }
+    
     }
 
     private void writeVariantInfo( String sampleID, VCFRow row, VCFReader reader, BufferedWriter infoWriter ) throws IOException {
